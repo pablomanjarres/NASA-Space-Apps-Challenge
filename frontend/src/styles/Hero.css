@@ -1,23 +1,30 @@
-/* Hero Container */
+/* ============================================================================
+   Hero — deep-space observatory. Consumes the unified cosmic tokens
+   (see DESIGN-SYSTEM.md / global.css): void base, hairline borders, ONE soft
+   shadow, stellar→nebula accent, JetBrains Mono for telemetry, and warm
+   signal amber reserved for the single CTA. Motion is restrained and grounded
+   in the technique catalog (line-mask conveyor reveal + a light sweep), and is
+   honored by the global prefers-reduced-motion guard.
+   ============================================================================ */
+
+/* Container — void-800 → void-900 → void-950 ground behind the alpha canvas */
 .hero-container {
   position: relative;
   width: 100%;
   height: 100vh;
   overflow: hidden;
-  background: radial-gradient(ellipse at center, #0a0a1a 0%, #000000 50%, #000000 100%);
+  background: radial-gradient(ellipse at center,
+              var(--void-800) 0%, var(--void-900) 45%, var(--void-950) 100%);
 }
 
-/* Three.js Canvas */
+/* Three.js canvas */
 .hero-canvas {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   z-index: 1;
 }
 
-/* Hero Content Overlay */
+/* Content overlay */
 .hero-content {
   position: relative;
   z-index: 2;
@@ -25,114 +32,138 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
+/* Glass panel — void scrim for legibility over the starfield, hairline border,
+   exactly one soft shadow (no gradient-on-everything, no stacked glows). */
 .hero-text-container {
   text-align: center;
-  max-width: 900px;
+  max-width: 60rem;
   width: 100%;
-  animation: fadeInUp 1.2s ease-out;
-  background: rgba(0, 0, 0, 0.6);
-  -webkit-backdrop-filter: blur(15px);
-  backdrop-filter: blur(15px);
-  border-radius: 20px;
   padding: 2rem 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
-              0 0 80px rgba(102, 126, 234, 0.15),
-              inset 0 0 50px rgba(102, 126, 234, 0.08),
-              inset 0 0 100px rgba(255, 165, 0, 0.05);
+  border-radius: var(--radius-panel);
+  background: rgba(7, 11, 22, 0.62); /* void-900 @ 62% — dark, theme-stable scrim */
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-panel);
+  animation: heroFadeUp 0.8s cubic-bezier(0.2, 0.6, 0.2, 1) both;
 }
 
 @media (min-width: 640px) {
-  .hero-content {
-    padding: 2rem;
-  }
-  
-  .hero-text-container {
-    border-radius: 30px;
-    padding: 3rem 2rem;
-  }
+  .hero-content { padding: 2rem; }
+  .hero-text-container { padding: 3rem 2.5rem; }
 }
 
-/* Hero Title */
+/* Eyebrow — telemetry tag (mono, tracked, tertiary) with a live stellar dot */
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 1.5rem;
+  animation: heroFade 0.8s ease-out 0.1s both;
+}
+
+.hero-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.55);
+}
+
+/* Title — display face; main = the one sanctioned stellar→nebula sweep,
+   sub = a tracked secondary label. Each line rides up out of an overflow mask. */
 .hero-title {
-  margin: 0 0 2rem 0;
+  margin: 0 0 1.5rem 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
+}
+
+.hero-title-line {
+  display: block;
+  overflow: hidden;
 }
 
 .hero-title-main {
-  font-size: 4.5rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #ffffff 0%, #c7d7ff 30%, #a8c0ff 50%, #ffb347 80%, #ffa500 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  background-size: 200% 200%;
-  filter: drop-shadow(0 0 30px rgba(255, 165, 0, 0.7))
-          drop-shadow(0 0 60px rgba(168, 192, 255, 0.4))
-          drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
-  animation: glow 3s ease-in-out infinite alternate, gradientShift 8s ease infinite;
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.06;
   letter-spacing: -0.02em;
+  padding-bottom: 0.08em;
+  background-image: linear-gradient(105deg,
+              var(--stellar-300) 0%, var(--stellar-400) 35%, var(--nebula-400) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: heroRise 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) 0.15s both;
 }
 
 .hero-title-sub {
-  font-size: 1.8rem;
-  font-weight: 400;
-  color: #e8f0ff;
-  letter-spacing: 0.05em;
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(0.95rem, 1.9vw, 1.4rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  text-shadow: 0 0 25px rgba(168, 192, 255, 0.9),
-               0 0 40px rgba(168, 192, 255, 0.5),
-               0 2px 10px rgba(0, 0, 0, 0.9),
-               0 4px 20px rgba(0, 0, 0, 0.7);
-  animation: subtitleGlow 4s ease-in-out infinite alternate;
+  color: var(--text-secondary);
+  padding-bottom: 0.08em;
+  animation: heroRise 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) 0.28s both;
 }
 
-/* Hero Description */
+/* Description — secondary ink, comfortable measure */
 .hero-description {
-  font-size: 1.3rem;
-  color: #ffffff;
-  line-height: 1.8;
-  margin: 0 auto 3rem auto;
-  max-width: 700px;
-  animation: fadeIn 1.5s ease-out 0.3s backwards;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9),
-               0 4px 20px rgba(0, 0, 0, 0.7);
-  font-weight: 400;
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 40rem;
+  margin: 0 auto 2rem auto;
+  animation: heroFade 1s ease-out 0.4s both;
 }
 
-/* CTA Button */
+/* CTA — solid signal amber, dark ink, one soft amber shadow, restrained press.
+   A single traveling light sweep on hover (catalog: mirror / light sweep). */
 .hero-cta-button {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem 2rem;
+  gap: 0.6rem;
+  padding: 0.9rem 2rem;
+  font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 600;
-  color: #ffffff;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: 2px solid transparent;
-  border-radius: 50px;
+  letter-spacing: 0.01em;
+  color: #0a0c14;
+  background: var(--signal-500);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
   cursor: pointer;
   overflow: hidden;
-  transition: all 0.3s ease;
   text-decoration: none;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4),
-              0 0 20px rgba(102, 126, 234, 0.3);
-  animation: fadeIn 1.5s ease-out 0.6s backwards;
+  box-shadow: 0 10px 30px -14px rgba(245, 165, 36, 0.7);
+  transition: background-color 0.2s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  animation: heroFade 1s ease-out 0.55s both;
 }
 
 @media (min-width: 640px) {
   .hero-cta-button {
-    padding: 1.2rem 3rem;
-    font-size: 1.2rem;
+    padding: 1rem 2.6rem;
+    font-size: 1.1rem;
   }
 }
 
@@ -140,300 +171,112 @@
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
-  width: 100%;
+  left: -120%;
+  width: 60%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.35) 50%, transparent 80%);
+  transform: skewX(-20deg);
+  transition: left 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.hero-cta-button:hover::before {
-  left: 100%;
-}
+.hero-cta-button:hover::before { left: 120%; }
 
 .hero-cta-button:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 15px 50px rgba(102, 126, 234, 0.6),
-              0 0 30px rgba(102, 126, 234, 0.5);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: var(--signal-400);
+  box-shadow: 0 14px 34px -12px rgba(245, 165, 36, 0.85);
+  transform: translateY(-2px);
 }
 
-.hero-cta-button:active {
-  transform: translateY(-1px) scale(1.02);
-}
+.hero-cta-button:active { transform: translateY(0); }
 
 .button-text {
   position: relative;
   z-index: 1;
-  margin-right: 0.5rem;
 }
 
 .button-icon {
   position: relative;
   z-index: 1;
-  display: inline-block;
-  transition: transform 0.3s ease;
-  font-size: 1.4rem;
-  margin-left: 0.5rem;
+  font-size: 1.05em;
+  transition: transform 0.25s ease;
 }
 
-.hero-cta-button:hover .button-icon {
-  transform: translateX(5px);
-}
+.hero-cta-button:hover .button-icon { transform: translateX(4px); }
 
-/* Hero Stats */
+/* Stat chips — telemetry row: mono values (primary), tracked tertiary labels,
+   hairline chip on a faint surface. */
 .hero-stats {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
-  gap: 2rem;
-  margin-top: 4rem;
-  animation: fadeIn 1.5s ease-out 0.9s backwards;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+  animation: heroFade 1s ease-out 0.7s both;
 }
 
 .stat-item {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 8rem;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--surface);
 }
 
 .stat-value {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #ffa500;
-  margin-bottom: 0.3rem;
-  text-shadow: 0 0 20px rgba(255, 165, 0, 0.8),
-               0 2px 8px rgba(0, 0, 0, 0.9);
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
 }
 
 .stat-label {
-  font-size: 0.9rem;
-  color: #ffffff;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9),
-               0 4px 15px rgba(0, 0, 0, 0.7);
-}
-
-.stat-divider {
-  width: 2px;
-  height: 40px;
-  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3), transparent);
-}
-
-/* Scroll Indicator */
-.scroll-indicator {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  animation: fadeIn 2s ease-out 1.2s backwards;
-}
-
-.scroll-mouse {
-  width: 30px;
-  height: 50px;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  border-radius: 20px;
-  position: relative;
-  animation: bounce 2s infinite;
-}
-
-.scroll-wheel {
-  width: 4px;
-  height: 10px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 2px;
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  animation: scroll 2s infinite;
-}
-
-.scroll-text {
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
 
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Entrance keyframes — one-shot, subtle; global guard collapses them to a
+   static state under prefers-reduced-motion. */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+@keyframes heroFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes glow {
-  from {
-    filter: drop-shadow(0 0 20px rgba(255, 165, 0, 0.5))
-            drop-shadow(0 0 40px rgba(168, 192, 255, 0.3));
-  }
-  to {
-    filter: drop-shadow(0 0 50px rgba(255, 165, 0, 0.9))
-            drop-shadow(0 0 80px rgba(168, 192, 255, 0.5));
-  }
+@keyframes heroRise {
+  from { opacity: 0; transform: translateY(110%); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes subtitleGlow {
-  from {
-    text-shadow: 0 0 20px rgba(168, 192, 255, 0.8),
-                 0 0 35px rgba(168, 192, 255, 0.4),
-                 0 2px 10px rgba(0, 0, 0, 0.9);
-  }
-  to {
-    text-shadow: 0 0 30px rgba(168, 192, 255, 1),
-                 0 0 50px rgba(168, 192, 255, 0.6),
-                 0 2px 10px rgba(0, 0, 0, 0.9);
-  }
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes scroll {
-  0% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  50% {
-    opacity: 0.5;
-    transform: translateX(-50%) translateY(15px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 640px) {
-  .hero-title-main {
-    font-size: 2rem;
-    line-height: 1.1;
-  }
-
-  .hero-title-sub {
-    font-size: 0.95rem;
-  }
-
-  .hero-description {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-  }
-
-  .hero-stats {
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-
+  .hero-stats { gap: 0.5rem; }
   .stat-item {
-    flex: 1;
-    min-width: 100px;
+    min-width: 7rem;
+    padding: 0.6rem 0.9rem;
   }
-
-  .stat-value {
-    font-size: 1.2rem;
-  }
-
-  .stat-label {
-    font-size: 0.7rem;
-  }
-
-  .stat-divider {
-    height: 30px;
-  }
+  .stat-value { font-size: 1rem; }
+  .stat-label { font-size: 0.62rem; }
 }
 
-@media (min-width: 641px) and (max-width: 768px) {
-  .hero-title-main {
-    font-size: 2.8rem;
-  }
-
-  .hero-title-sub {
-    font-size: 1.2rem;
-  }
-
-  .hero-description {
-    font-size: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .hero-stats {
-    gap: 1.5rem;
-    margin-top: 3rem;
-  }
-
-  .stat-value {
-    font-size: 1.5rem;
-  }
-
-  .stat-label {
-    font-size: 0.8rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-title-main {
-    font-size: 1.75rem;
-  }
-
-  .hero-title-sub {
-    font-size: 0.85rem;
-  }
-
-  .hero-description {
-    font-size: 0.85rem;
-  }
-
+@media (max-width: 400px) {
   .hero-stats {
     flex-direction: column;
-    gap: 1.5rem;
+    align-items: stretch;
   }
-
-  .stat-divider {
-    display: none;
-  }
-
   .stat-item {
-    min-width: auto;
+    min-width: 0;
+    align-items: center;
   }
 }

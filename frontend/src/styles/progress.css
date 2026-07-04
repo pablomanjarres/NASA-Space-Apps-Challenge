@@ -1,65 +1,80 @@
-/* Progress Bar Styles */
-.progress-bar-94 {
-  width: 94%;
+/* ============================================================================
+   GRIT-X-AWA — data / confidence bars (canonical)
+   Deep-space observatory palette. This file is @imported by global.css, so it
+   is the SINGLE source of truth for progress-bar width utilities: the width
+   VALUES below are real data and are preserved verbatim. ml-dashboard.css no
+   longer redeclares them (deduped). Bar fills read in the cosmic palette:
+   stellar (data), nebula (confidence), signal amber (scarce, CTA-weight).
+   ============================================================================ */
+
+/* ---- Track + fill treatment (tokenized) --------------------------------- */
+.progress-track {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
 }
 
-.progress-bar-94-2 {
-  width: 94.2%;
+.progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  /* stellar cyan = the data accent */
+  background-image: linear-gradient(90deg, var(--stellar-500), var(--stellar-300));
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.progress-bar-92-8 {
-  width: 92.8%;
+/* semantic fill variants (same track, different signal) */
+.progress-bar--confidence {
+  background-image: linear-gradient(90deg, var(--nebula-600), var(--nebula-400));
+}
+.progress-bar--signal {
+  background-image: linear-gradient(90deg, var(--signal-600), var(--signal-400));
 }
 
-.progress-bar-92-1 {
-  width: 92.1%;
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar { transition: none; }
 }
 
-.progress-bar-91-5 {
-  width: 91.5%;
-}
+/* ---- Width values (REAL DATA — do not alter) ---------------------------- */
+/* Model / accuracy readouts */
+.progress-bar-94    { width: 94%; }
+.progress-bar-94-2  { width: 94.2%; }
+.progress-bar-92-8  { width: 92.8%; }
+.progress-bar-92-1  { width: 92.1%; }
+.progress-bar-92    { width: 92%; }
+.progress-bar-91-5  { width: 91.5%; }
+.progress-bar-91    { width: 91%; }
+.progress-bar-89    { width: 89%; }
+.progress-bar-88    { width: 88%; }
+.progress-bar-78    { width: 78%; }
 
-.progress-bar-91 {
-  width: 91%;
-}
+/* Classification-model feature weights */
+.progress-bar-24-3  { width: 24.3%; }
+.progress-bar-21-6  { width: 21.6%; }
+.progress-bar-16-9  { width: 16.9%; }
+.progress-bar-12-8  { width: 12.8%; }
+.progress-bar-9-7   { width: 9.7%; }
+.progress-bar-8-4   { width: 8.4%; }
+.progress-bar-6-3   { width: 6.3%; }
 
-.progress-bar-89 {
-  width: 89%;
-}
+/* Analysis progress */
+.progress-bar-width-96 { width: 96%; }
+.progress-bar-width-89 { width: 89%; }
+.progress-bar-width-12 { width: 12%; }
 
-.progress-bar-88 {
-  width: 88%;
-}
+/* Planet-type distribution */
+.planet-type-hot-jupiter  { width: 15%; }
+.planet-type-warm-jupiter { width: 10%; }
+.planet-type-neptune-like { width: 20%; }
+.planet-type-super-earth  { width: 30%; }
+.planet-type-earth-like   { width: 25%; }
 
-.progress-bar-78 {
-  width: 78%;
-}
+/* Planet classification probabilities */
+.prob-bar-68 { width: 68%; }
+.prob-bar-24 { width: 24%; }
+.prob-bar-8  { width: 8%; }
 
-/* Classification model progress bars */
-.progress-bar-24-3 {
-  width: 24.3%;
-}
-
-.progress-bar-21-6 {
-  width: 21.6%;
-}
-
-.progress-bar-16-9 {
-  width: 16.9%;
-}
-
-.progress-bar-12-8 {
-  width: 12.8%;
-}
-
-.progress-bar-9-7 {
-  width: 9.7%;
-}
-
-.progress-bar-8-4 {
-  width: 8.4%;
-}
-
-.progress-bar-6-3 {
-  width: 6.3%;
-}
+/* Habitability scores */
+.habitability-72 { width: 72%; }
+.habitability-15 { width: 15%; }
+.habitability-89 { width: 89%; }

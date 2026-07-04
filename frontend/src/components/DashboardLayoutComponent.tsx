@@ -25,10 +25,30 @@ export const PageContext = React.createContext<PageContextType>({
   setActivePage: () => {}
 });
 
+const SECTION_LABELS: Record<string, string> = {
+  dashboard: 'Mission Control',
+  exoplanets: 'Exoplanets',
+  visualizations: 'Visualizations',
+  help: 'Help & Resources',
+};
+
 const DashboardLayoutComponent: React.FC = () => {
   const [activePage, setActivePage] = useState<string>('dashboard');
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
   const [displayPage, setDisplayPage] = useState<string>('dashboard');
+  // Live UTC readout — authentic telemetry, filled client-side (no hydration mismatch)
+  const [utc, setUtc] = useState<string>('');
+
+  useEffect(() => {
+    const tick = () => {
+      const d = new Date();
+      const p = (n: number) => String(n).padStart(2, '0');
+      setUtc(`${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())} UTC`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   // Define a function to update the active page with transition
   const handleSetActivePage = useCallback((page: string) => {
@@ -79,31 +99,47 @@ const DashboardLayoutComponent: React.FC = () => {
       <ExoplanetProvider>
         <ThemeProvider>
           <PageContext.Provider value={contextValue}>
-            <div className="flex h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-purple-50 dark:from-gray-950 dark:via-slate-900 dark:to-purple-950/30 transition-colors duration-200 relative overflow-hidden">
-              {/* Cosmic background effects */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-400/10 dark:bg-blue-500/5 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-1/3 w-[500px] h-[500px] bg-purple-400/10 dark:bg-purple-500/5 rounded-full blur-3xl" />
-                <div className="absolute top-1/2 right-0 w-64 h-64 bg-pink-400/10 dark:bg-pink-500/5 rounded-full blur-3xl" />
+            <div className="relative flex h-screen overflow-hidden bg-[var(--bg)] text-ink transition-colors duration-200">
+              {/* Ambient atmosphere — unified palette, restrained (blueprint grid + two faint glows) */}
+              <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+                <div className="absolute inset-0 hud-grid opacity-60" />
+                <div className="absolute -top-24 right-[8%] h-72 w-72 rounded-full bg-nebula-500/10 blur-[120px]" />
+                <div className="absolute bottom-[-12%] left-[22%] h-80 w-80 rounded-full bg-stellar-500/[0.06] blur-[130px]" />
               </div>
 
-              {/* Sidebar container - fixed height */}
-              <div className="flex-shrink-0 h-full relative z-10">
+              {/* Sidebar container */}
+              <div className="relative z-10 h-full flex-shrink-0">
                 <SideBar />
               </div>
 
               {/* Main content area */}
-              <main className="flex-1 overflow-y-auto themed-scrollbar p-3 sm:p-4 md:p-6 pt-20 sm:pt-16 md:pt-4 relative z-10">
-                {/* Theme and Font Size toggle buttons */}
-                <div className="flex justify-end mb-3 sm:mb-4 gap-2 sm:gap-3">
-                  <FontSizeToggle />
-                  <ThemeToggle />
-                </div>
+              <main className="relative z-10 flex-1 overflow-y-auto themed-scrollbar p-3 pt-20 sm:p-4 sm:pt-16 md:p-6 md:pt-4">
+                {/* Mission-control topbar */}
+                <header className="glass mb-4 flex items-center justify-end gap-3 rounded-card px-4 py-2.5 sm:justify-between">
+                  <div className="hidden min-w-0 items-center gap-3 sm:flex">
+                    <span className="relative flex h-2 w-2 flex-shrink-0">
+                      <span className="absolute inline-flex h-full w-full rounded-pill bg-stellar-400 opacity-60 animate-ping" />
+                      <span className="relative inline-flex h-2 w-2 rounded-pill bg-stellar-400" />
+                    </span>
+                    <span className="truncate font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-tertiary">
+                      {SECTION_LABELS[activePage] ?? 'Mission Control'}
+                      <span className="text-ink-secondary"> · Operational</span>
+                    </span>
+                    <span className="hidden font-mono text-[0.7rem] tracking-wide tabular-nums text-ink-tertiary lg:inline">
+                      {utc}
+                    </span>
+                  </div>
+                  <div className="flex flex-shrink-0 items-center gap-2">
+                    <FontSizeToggle />
+                    <ThemeToggle />
+                  </div>
+                </header>
+
                 <Suspense fallback={
-                  <div className="flex items-center justify-center h-full">
+                  <div className="flex h-full items-center justify-center">
                     <div className="flex flex-col items-center gap-4">
-                      <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" />
-                      <p className="text-gray-600 dark:text-gray-400 font-medium">Loading mission data...</p>
+                      <div className="h-12 w-12 animate-spin rounded-full border-2 border-stellar-400/20 border-t-stellar-400" />
+                      <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink-tertiary">Loading mission data…</p>
                     </div>
                   </div>
                 }>

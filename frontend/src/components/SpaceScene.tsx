@@ -3,7 +3,32 @@ import { useFrame } from '@react-three/fiber';
 import { Sphere, Stars, MeshDistortMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Star component with enhanced glow effect
+// ============================================================================
+// Deep-space observatory scene. Recolored to the unified cosmic palette:
+//   void (base)  ·  nebula violet  ·  stellar cyan (accent)  ·  ink/white.
+// Warm signal amber is deliberately absent here so it stays scarce for the CTA.
+// A cool blue-white central star (hot-star / ion-drive read) keeps it NASA-grade
+// rather than cartoonish. Motion is calm and honors prefers-reduced-motion.
+// ============================================================================
+
+// palette (token hexes — kept in sync with global.css / tailwind.config.mjs)
+const VOID_500 = '#243156';
+const VOID_600 = '#1a2440';
+const NEBULA_400 = '#a78bfa';
+const NEBULA_500 = '#8b5cf6';
+const NEBULA_600 = '#7c5cf0';
+const NEBULA_700 = '#5b4bd6';
+const STELLAR_200 = '#a5f0fb';
+const STELLAR_300 = '#67e8f9';
+const STELLAR_400 = '#22d3ee';
+const INK = '#e8ecf8';
+
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Central star — cool blue-white core with restrained stellar/nebula glow
 function Star() {
   const starRef = useRef<THREE.Mesh>(null);
   const glowRef = useRef<THREE.Mesh>(null);
@@ -12,25 +37,27 @@ function Star() {
 
   // Detect mobile
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const reduced = prefersReducedMotion();
 
   useFrame((state) => {
+    if (reduced) return;
     if (starRef.current) {
       starRef.current.rotation.y += 0.001;
       starRef.current.rotation.x += 0.0005;
     }
     if (glowRef.current) {
-      const pulse = Math.sin(state.clock.elapsedTime * 0.5) * 0.3 + 1;
+      const pulse = Math.sin(state.clock.elapsedTime * 0.5) * 0.2 + 1;
       glowRef.current.scale.setScalar(pulse);
     }
     if (!isMobile) {
       if (outerGlowRef.current) {
-        const pulse = Math.sin(state.clock.elapsedTime * 0.3) * 0.2 + 1;
+        const pulse = Math.sin(state.clock.elapsedTime * 0.3) * 0.15 + 1;
         outerGlowRef.current.scale.setScalar(pulse);
-        outerGlowRef.current.rotation.z += 0.002;
+        outerGlowRef.current.rotation.z += 0.0015;
       }
       if (coronaRef.current) {
-        coronaRef.current.rotation.y += 0.003;
-        const pulse = Math.sin(state.clock.elapsedTime * 0.7) * 0.15 + 1;
+        coronaRef.current.rotation.y += 0.0025;
+        const pulse = Math.sin(state.clock.elapsedTime * 0.7) * 0.12 + 1;
         coronaRef.current.scale.setScalar(pulse);
       }
     }
@@ -38,51 +65,51 @@ function Star() {
 
   return (
     <group>
-      {/* Outermost glow - desktop only */}
+      {/* Outermost glow — faint nebula halo (desktop only) */}
       {!isMobile && (
         <Sphere ref={outerGlowRef} args={[4, 24, 24]} position={[0, 0, 0]}>
           <meshBasicMaterial
-            color="#ff8800"
+            color={NEBULA_500}
+            transparent
+            opacity={0.05}
+          />
+        </Sphere>
+      )}
+
+      {/* Corona layer — stellar cyan (desktop only) */}
+      {!isMobile && (
+        <Sphere ref={coronaRef} args={[3, 24, 24]} position={[0, 0, 0]}>
+          <meshBasicMaterial
+            color={STELLAR_400}
             transparent
             opacity={0.08}
           />
         </Sphere>
       )}
 
-      {/* Corona layer - desktop only */}
-      {!isMobile && (
-        <Sphere ref={coronaRef} args={[3, 24, 24]} position={[0, 0, 0]}>
-          <meshBasicMaterial
-            color="#ffaa00"
-            transparent
-            opacity={0.12}
-          />
-        </Sphere>
-      )}
-
-      {/* Middle glow */}
+      {/* Middle glow — stellar */}
       <Sphere ref={glowRef} args={[2.5, isMobile ? 24 : 32, isMobile ? 24 : 32]} position={[0, 0, 0]}>
         <meshBasicMaterial
-          color="#ff8800"
+          color={STELLAR_300}
           transparent
-          opacity={0.2}
+          opacity={0.14}
         />
       </Sphere>
 
-      {/* Main star with enhanced distortion */}
+      {/* Main star — cool blue-white hot core */}
       <Sphere ref={starRef} args={[1.5, isMobile ? 32 : 64, isMobile ? 32 : 64]} position={[0, 0, 0]}>
         <MeshDistortMaterial
-          emissive="#ffa500"
-          emissiveIntensity={4}
-          color="#ffcc00"
-          distort={isMobile ? 0.2 : 0.4}
-          speed={2.5}
-          roughness={0.1}
+          emissive={STELLAR_300}
+          emissiveIntensity={2.2}
+          color={STELLAR_200}
+          distort={isMobile ? 0.2 : 0.35}
+          speed={2}
+          roughness={0.15}
         />
       </Sphere>
 
-      {/* Additional point lights for better illumination */}
-      <pointLight position={[0, 0, 0]} intensity={5} distance={50} color="#ffaa00" />
+      {/* Point light from the star — stellar tint */}
+      <pointLight position={[0, 0, 0]} intensity={3} distance={50} color={STELLAR_300} />
     </group>
   );
 }
@@ -101,8 +128,10 @@ function Exoplanet({ distance, size, speed, color, tilt = 0, type = 'rocky' }: E
   const planetRef = useRef<THREE.Mesh>(null);
   const orbitRef = useRef<THREE.Group>(null);
   const atmosphereRef = useRef<THREE.Mesh>(null);
+  const reduced = prefersReducedMotion();
 
-  useFrame((state) => {
+  useFrame(() => {
+    if (reduced) return;
     if (orbitRef.current) {
       orbitRef.current.rotation.y += speed;
     }
@@ -181,13 +210,13 @@ function Exoplanet({ distance, size, speed, color, tilt = 0, type = 'rocky' }: E
 
   return (
     <group ref={orbitRef} rotation={[tilt, 0, 0]}>
-      {/* Orbit ring with enhanced glow */}
+      {/* Orbit ring — faint stellar telemetry line */}
       <line geometry={orbitRing} rotation={[Math.PI / 2, 0, 0]}>
-        <lineBasicMaterial attach="material" color="#667eea" opacity={0.4} transparent />
+        <lineBasicMaterial attach="material" color={STELLAR_400} opacity={0.16} transparent />
       </line>
-      {/* Second orbit ring for depth */}
+      {/* Second orbit ring for depth — faint nebula */}
       <line geometry={orbitRing} rotation={[Math.PI / 2, 0, 0]}>
-        <lineBasicMaterial attach="material" color="#a8c0ff" opacity={0.2} transparent />
+        <lineBasicMaterial attach="material" color={NEBULA_400} opacity={0.09} transparent />
       </line>
 
       {/* Planet with atmosphere */}
@@ -197,7 +226,7 @@ function Exoplanet({ distance, size, speed, color, tilt = 0, type = 'rocky' }: E
           <meshBasicMaterial
             color={color}
             transparent
-            opacity={0.2}
+            opacity={0.14}
             side={THREE.BackSide}
           />
         </Sphere>
@@ -217,7 +246,8 @@ function Exoplanet({ distance, size, speed, color, tilt = 0, type = 'rocky' }: E
   );
 }
 
-// Rocket component with engine glow and trail
+// Rocket component with engine glow and trail (refined: instrument-white body,
+// cool ion-drive engine glow)
 interface RocketProps {
   delay: number;
   direction: 'left' | 'right';
@@ -230,6 +260,7 @@ function Rocket({ delay, direction }: RocketProps) {
   const [startTime] = useState(() => Date.now() + delay * 1000);
   const [trailPoints] = useState<THREE.Vector3[]>([]);
   const maxTrailLength = 120;
+  const reduced = prefersReducedMotion();
 
   const calculatePosition = (progress: number) => {
     const t = progress * Math.PI * 2;
@@ -245,6 +276,7 @@ function Rocket({ delay, direction }: RocketProps) {
   };
 
   useFrame((state) => {
+    if (reduced) return;
     if (!groupRef.current) return;
 
     const elapsed = (Date.now() - startTime) / 1000;
@@ -280,13 +312,13 @@ function Rocket({ delay, direction }: RocketProps) {
 
   return (
     <>
-      {/* Rocket trail - engine exhaust */}
+      {/* Rocket trail — cool ion exhaust */}
       <line ref={trailRef}>
         <bufferGeometry />
         <lineBasicMaterial
-          color="#FF6B35"
+          color={STELLAR_400}
           transparent
-          opacity={0.6}
+          opacity={0.4}
           linewidth={2}
         />
       </line>
@@ -298,11 +330,11 @@ function Rocket({ delay, direction }: RocketProps) {
           <mesh position={[0, 0, 0.4]}>
             <coneGeometry args={[0.15, 0.6, 8]} />
             <meshStandardMaterial
-              color="#E8E8E8"
+              color={INK}
               metalness={0.8}
-              roughness={0.2}
-              emissive="#666666"
-              emissiveIntensity={0.3}
+              roughness={0.25}
+              emissive={VOID_500}
+              emissiveIntensity={0.2}
             />
           </mesh>
 
@@ -310,11 +342,11 @@ function Rocket({ delay, direction }: RocketProps) {
           <mesh position={[0, 0, 0.85]}>
             <coneGeometry args={[0.08, 0.3, 8]} />
             <meshStandardMaterial
-              color="#FF4444"
+              color={STELLAR_300}
               metalness={0.6}
               roughness={0.3}
-              emissive="#FF0000"
-              emissiveIntensity={0.5}
+              emissive={STELLAR_400}
+              emissiveIntensity={0.4}
             />
           </mesh>
 
@@ -331,11 +363,11 @@ function Rocket({ delay, direction }: RocketProps) {
             >
               <boxGeometry args={[0.25, 0.02, 0.3]} />
               <meshStandardMaterial
-                color="#4444FF"
+                color={NEBULA_500}
                 metalness={0.7}
                 roughness={0.3}
-                emissive="#0000AA"
-                emissiveIntensity={0.4}
+                emissive={NEBULA_700}
+                emissiveIntensity={0.3}
               />
             </mesh>
           ))}
@@ -344,24 +376,24 @@ function Rocket({ delay, direction }: RocketProps) {
           <mesh position={[0, 0, -0.1]}>
             <sphereGeometry args={[0.2, 16, 16]} />
             <meshBasicMaterial
-              color="#FF6B35"
+              color={STELLAR_400}
               transparent
-              opacity={0.7}
+              opacity={0.5}
             />
           </mesh>
 
-          {/* Engine fire */}
+          {/* Engine plume */}
           <mesh position={[0, 0, -0.3]}>
             <coneGeometry args={[0.12, 0.4, 8]} />
             <meshBasicMaterial
-              color="#FFA500"
+              color={STELLAR_300}
               transparent
-              opacity={0.8}
+              opacity={0.6}
             />
           </mesh>
 
           {/* Point light for engine */}
-          <pointLight position={[0, 0, -0.2]} intensity={2} distance={3} color="#FF6B35" />
+          <pointLight position={[0, 0, -0.2]} intensity={1.5} distance={3} color={STELLAR_400} />
         </group>
       </group>
     </>
@@ -381,6 +413,7 @@ function OrbitingAsteroid({ delay, direction }: OrbitingAsteroidProps) {
   const [startTime] = useState(() => Date.now() + delay * 1000);
   const [trailPoints] = useState<THREE.Vector3[]>([]);
   const maxTrailLength = 80;
+  const reduced = prefersReducedMotion();
 
   // Create asteroid texture with rocky surface
   const texture = useMemo(() => {
@@ -390,15 +423,15 @@ function OrbitingAsteroid({ delay, direction }: OrbitingAsteroidProps) {
     const ctx = canvas.getContext('2d');
 
     if (ctx) {
-      // Lighter base rocky colors for asteroid appearance
-      const baseColors = ['#A8A8A8', '#B8A89A', '#9C9C9C', '#ADADAD', '#8C8C8C'];
+      // Neutral slate-rock base tones (cool grey, sits within the void palette)
+      const baseColors = ['#8b93a8', '#7c8494', '#9098ab', '#767e94', '#6d7488'];
       const baseColor = baseColors[Math.floor(Math.random() * baseColors.length)];
 
-      // Create gradient for depth - lighter overall
+      // Create gradient for depth
       const gradient = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
-      gradient.addColorStop(0, '#D0D0D0');
+      gradient.addColorStop(0, '#aab2c6');
       gradient.addColorStop(0.5, baseColor);
-      gradient.addColorStop(1, '#707070');
+      gradient.addColorStop(1, '#4a5270');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 512, 512);
 
@@ -426,7 +459,7 @@ function OrbitingAsteroid({ delay, direction }: OrbitingAsteroidProps) {
         const x = Math.random() * 512;
         const y = Math.random() * 512;
         const size = Math.random() * 8 + 2;
-        ctx.fillStyle = `rgba(${100 + Math.random() * 50}, ${100 + Math.random() * 50}, ${100 + Math.random() * 50}, 0.4)`;
+        ctx.fillStyle = `rgba(${100 + Math.random() * 50}, ${105 + Math.random() * 50}, ${125 + Math.random() * 50}, 0.4)`;
         ctx.fillRect(x, y, size, size);
       }
     }
@@ -450,7 +483,8 @@ function OrbitingAsteroid({ delay, direction }: OrbitingAsteroidProps) {
     return new THREE.Vector3(x, y, z);
   };
 
-  useFrame((state) => {
+  useFrame(() => {
+    if (reduced) return;
     if (!groupRef.current) return;
 
     const elapsed = (Date.now() - startTime) / 1000;
@@ -488,13 +522,13 @@ function OrbitingAsteroid({ delay, direction }: OrbitingAsteroidProps) {
 
   return (
     <>
-      {/* Trail line - dust trail */}
+      {/* Trail line — faint dust trail */}
       <line ref={trailRef}>
         <bufferGeometry />
         <lineBasicMaterial
-          color="#D0D0D0"
+          color="#8b93a8"
           transparent
-          opacity={0.5}
+          opacity={0.35}
           linewidth={1}
         />
       </line>
@@ -510,7 +544,7 @@ function OrbitingAsteroid({ delay, direction }: OrbitingAsteroidProps) {
             metalness={0.05}
             bumpMap={texture}
             bumpScale={0.08}
-            color="#C8C8C8"
+            color="#9098ab"
           />
         </mesh>
 
@@ -526,7 +560,7 @@ function OrbitingAsteroid({ delay, direction }: OrbitingAsteroidProps) {
             ]}>
               <sphereGeometry args={[0.03, 8, 8]} />
               <meshStandardMaterial
-                color="#B0B0B0"
+                color="#7c8494"
                 roughness={0.95}
                 metalness={0.05}
               />
@@ -586,9 +620,9 @@ function ShootingStar({ delay }: { delay: number }) {
     <line ref={lineRef}>
       <bufferGeometry />
       <lineBasicMaterial
-        color="#FFFFFF"
+        color={STELLAR_200}
         transparent
-        opacity={0.9}
+        opacity={0.7}
         linewidth={3}
       />
     </line>
@@ -599,74 +633,80 @@ function ShootingStar({ delay }: { delay: number }) {
 export default function SpaceScene() {
   // Detect if mobile device for performance optimization
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const reduced = prefersReducedMotion();
 
   return (
     <>
       {/* Ambient lighting */}
-      <ambientLight intensity={0.3} />
+      <ambientLight intensity={0.35} />
 
-      {/* Point light from star */}
-      <pointLight position={[0, 0, 0]} intensity={4} distance={40} color="#ffa500" />
+      {/* Point light from star — stellar tint */}
+      <pointLight position={[0, 0, 0]} intensity={2.6} distance={40} color={STELLAR_300} />
 
       {/* Additional directional lighting for better visibility */}
       <directionalLight position={[10, 10, 5]} intensity={0.5} color="#ffffff" />
 
-      {/* Enhanced Starfield background - reduced on mobile */}
+      {/* Starfield background — calm, near-white, the centerpiece of the scene */}
       <Stars
         radius={100}
         depth={50}
         count={isMobile ? 5000 : 15000}
         factor={6}
-        saturation={0.3}
+        saturation={0}
         fade
-        speed={2}
+        speed={reduced ? 0 : 1}
       />
-      {/* Additional twinkling stars layer - only on desktop */}
+      {/* Sparse foreground twinkle layer with a faint cool tint — desktop only */}
       {!isMobile && (
         <Stars
           radius={150}
           depth={80}
           count={5000}
           factor={8}
-          saturation={0.8}
+          saturation={0.2}
           fade={false}
-          speed={0.5}
+          speed={reduced ? 0 : 0.4}
         />
       )}
 
       {/* Central star with pulsing glow */}
       <Star />
 
-      {/* Exoplanets - reduced on mobile */}
-      <Exoplanet distance={3} size={0.3} speed={0.009} color="#CD853F" tilt={0.1} type="rocky" />
-      <Exoplanet distance={4.5} size={0.4} speed={0.007} color="#8B4513" tilt={0.05} type="rocky" />
-      <Exoplanet distance={6} size={0.55} speed={0.005} color="#4169E1" tilt={-0.15} type="gas" />
-      <Exoplanet distance={7.5} size={0.35} speed={0.004} color="#DC143C" tilt={0.2} type="rocky" />
+      {/* Exoplanets — cohesive void / nebula / stellar tones (reduced on mobile) */}
+      <Exoplanet distance={3} size={0.3} speed={0.009} color={VOID_500} tilt={0.1} type="rocky" />
+      <Exoplanet distance={4.5} size={0.4} speed={0.007} color={NEBULA_700} tilt={0.05} type="rocky" />
+      <Exoplanet distance={6} size={0.55} speed={0.005} color={NEBULA_500} tilt={-0.15} type="gas" />
+      <Exoplanet distance={7.5} size={0.35} speed={0.004} color={VOID_500} tilt={0.2} type="rocky" />
       {!isMobile && (
         <>
-          <Exoplanet distance={9} size={0.6} speed={0.0025} color="#9370DB" tilt={-0.1} type="gas" />
-          <Exoplanet distance={10.5} size={0.32} speed={0.002} color="#87CEEB" tilt={0.25} type="ice" />
-          <Exoplanet distance={12} size={0.38} speed={0.0015} color="#FF6347" tilt={-0.2} type="rocky" />
-          <Exoplanet distance={14} size={0.5} speed={0.001} color="#FFD700" tilt={0.15} type="gas" />
-          <Exoplanet distance={15.5} size={0.28} speed={0.0008} color="#E0FFFF" tilt={-0.25} type="ice" />
+          <Exoplanet distance={9} size={0.6} speed={0.0025} color={NEBULA_600} tilt={-0.1} type="gas" />
+          <Exoplanet distance={10.5} size={0.32} speed={0.002} color={STELLAR_300} tilt={0.25} type="ice" />
+          <Exoplanet distance={12} size={0.38} speed={0.0015} color={VOID_600} tilt={-0.2} type="rocky" />
+          <Exoplanet distance={14} size={0.5} speed={0.001} color={NEBULA_500} tilt={0.15} type="gas" />
+          <Exoplanet distance={15.5} size={0.28} speed={0.0008} color={STELLAR_200} tilt={-0.25} type="ice" />
         </>
       )}
 
-      {/* Animated asteroids - reduced on mobile */}
-      <OrbitingAsteroid delay={0} direction="left" />
-      {!isMobile && (
+      {/* Moving elements — omitted entirely under reduced motion for a calm scene */}
+      {!reduced && (
         <>
-          <OrbitingAsteroid delay={7} direction="right" />
-          <OrbitingAsteroid delay={14} direction="left" />
-        </>
-      )}
+          {/* Animated asteroids - reduced on mobile */}
+          <OrbitingAsteroid delay={0} direction="left" />
+          {!isMobile && (
+            <>
+              <OrbitingAsteroid delay={7} direction="right" />
+              <OrbitingAsteroid delay={14} direction="left" />
+            </>
+          )}
 
-      {/* Shooting stars - reduced on mobile */}
-      <ShootingStar delay={0} />
-      {!isMobile && (
-        <>
-          <ShootingStar delay={5} />
-          <ShootingStar delay={10} />
+          {/* Shooting stars - reduced on mobile */}
+          <ShootingStar delay={0} />
+          {!isMobile && (
+            <>
+              <ShootingStar delay={5} />
+              <ShootingStar delay={10} />
+            </>
+          )}
         </>
       )}
     </>

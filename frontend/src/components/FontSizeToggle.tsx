@@ -31,13 +31,13 @@ const FontSizeToggle: React.FC = () => {
   };
 
   return (
-    <button 
+    <button
       onClick={increaseFontSize}
-      className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold"
+      className="grid h-10 w-10 place-items-center rounded-control border border-hairline bg-surface font-display font-semibold text-ink-secondary transition-colors duration-200 hover:border-stellar-400/40 hover:text-stellar-300"
       aria-label={getAriaLabel()}
       title={getAriaLabel()}
     >
-      <span className={`${fontSize === 'normal' ? 'text-base' : fontSize === 'large' ? 'text-lg' : 'text-xl'}`}>
+      <span className={`leading-none ${fontSize === 'normal' ? 'text-sm' : fontSize === 'large' ? 'text-base' : 'text-lg'}`}>
         {getFontSizeLabel()}
       </span>
     </button>

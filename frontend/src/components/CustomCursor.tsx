@@ -127,7 +127,7 @@ export default function CustomCursor() {
           position: fixed;
           width: 8px;
           height: 8px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: linear-gradient(135deg, #22d3ee 0%, #8b5cf6 100%);
           border-radius: 50%;
           pointer-events: none;
           transform: translate(-50%, -50%);
@@ -136,8 +136,8 @@ export default function CustomCursor() {
                       background 0.3s ease,
                       opacity 0.3s ease;
           z-index: 10000;
-          box-shadow: 0 0 10px rgba(139, 92, 246, 0.5),
-                      0 0 20px rgba(139, 92, 246, 0.3);
+          box-shadow: 0 0 10px rgba(34, 211, 238, 0.5),
+                      0 0 20px rgba(34, 211, 238, 0.3);
           opacity: 1;
         }
 
@@ -152,25 +152,25 @@ export default function CustomCursor() {
         .custom-cursor-dot.cursor-hover {
           width: 4px;
           height: 4px;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          box-shadow: 0 0 15px rgba(139, 92, 246, 0.8),
-                      0 0 30px rgba(139, 92, 246, 0.5);
+          background: linear-gradient(135deg, #22d3ee 0%, #8b5cf6 100%);
+          box-shadow: 0 0 15px rgba(34, 211, 238, 0.8),
+                      0 0 30px rgba(34, 211, 238, 0.5);
         }
 
         /* Click state */
         .custom-cursor-ring.cursor-click {
           width: 35px;
           height: 35px;
-          border-color: rgba(236, 72, 153, 0.9);
+          border-color: rgba(245, 165, 36, 0.9);
           animation: click-effect 0.3s ease;
         }
 
         .custom-cursor-dot.cursor-click {
           width: 12px;
           height: 12px;
-          background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
-          box-shadow: 0 0 20px rgba(236, 72, 153, 0.9),
-                      0 0 40px rgba(236, 72, 153, 0.6);
+          background: linear-gradient(135deg, #f5a524 0%, #f7b23f 100%);
+          box-shadow: 0 0 20px rgba(245, 165, 36, 0.9),
+                      0 0 40px rgba(245, 165, 36, 0.6);
         }
 
         /* Hidden state */
@@ -252,13 +252,13 @@ export default function CustomCursor() {
         }
 
         .dark .custom-cursor-ring.cursor-click {
-          border-color: rgba(244, 114, 182, 1);
+          border-color: rgba(245, 165, 36, 1);
         }
 
         .dark .custom-cursor-dot.cursor-click {
-          background: linear-gradient(135deg, #f472b6 0%, #a78bfa 100%);
-          box-shadow: 0 0 20px rgba(244, 114, 182, 1),
-                      0 0 40px rgba(244, 114, 182, 0.7);
+          background: linear-gradient(135deg, #f5a524 0%, #f7b23f 100%);
+          box-shadow: 0 0 20px rgba(245, 165, 36, 1),
+                      0 0 40px rgba(245, 165, 36, 0.7);
         }
 
         /* Mobile - hide custom cursor */
@@ -290,6 +290,19 @@ export default function CustomCursor() {
         body:has(.fixed.inset-0.z-50) .custom-cursor-ring,
         body:has(.fixed.inset-0.z-50) .custom-cursor-dot {
           display: none !important;
+        }
+
+        /* Respect reduced-motion: keep the reticle, drop the decorative pulse/scale */
+        @media (prefers-reduced-motion: reduce) {
+          .custom-cursor-ring,
+          .custom-cursor-dot {
+            transition: opacity 0.2s ease;
+            animation: none !important;
+          }
+          .custom-cursor-ring.cursor-hover,
+          .custom-cursor-ring.cursor-click {
+            animation: none !important;
+          }
         }
       `}</style>
     </>

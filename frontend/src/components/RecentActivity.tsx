@@ -58,19 +58,19 @@ const getActivityIcon = (type: 'success' | 'info' | 'warning' | 'error'): string
 
 const getActivityColor = (type: 'success' | 'info' | 'warning' | 'error'): string => {
   switch (type) {
-    case 'success': return 'bg-green-500/20 border-green-500/30 text-green-300';
-    case 'warning': return 'bg-yellow-500/20 border-yellow-500/30 text-yellow-300';
-    case 'error': return 'bg-red-500/20 border-red-500/30 text-red-300';
-    default: return 'bg-blue-500/20 border-blue-500/30 text-blue-300';
+    case 'success': return 'bg-stellar-400/[0.07] border-stellar-400/25';
+    case 'warning': return 'bg-signal-500/[0.07] border-signal-500/25';
+    case 'error': return 'bg-red-500/[0.07] border-red-400/25';
+    default: return 'bg-nebula-500/[0.07] border-nebula-400/25';
   }
 };
 
 const getIconColor = (type: 'success' | 'info' | 'warning' | 'error'): string => {
   switch (type) {
-    case 'success': return 'text-green-400';
-    case 'warning': return 'text-yellow-400';
-    case 'error': return 'text-red-400';
-    default: return 'text-blue-400';
+    case 'success': return 'text-stellar-300';
+    case 'warning': return 'text-signal-400';
+    case 'error': return 'text-red-300';
+    default: return 'text-nebula-300';
   }
 };
 
@@ -153,36 +153,38 @@ const RecentActivity = forwardRef<RecentActivityRef>((props, ref) => {
   }));
 
   return (
-    <div className="bg-gradient-to-br from-purple-900/40 via-pink-900/30 to-purple-900/40 backdrop-blur-sm rounded-2xl border border-purple-500/20 p-6 shadow-2xl">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
-          <i className="fas fa-history text-purple-300 text-lg"></i>
+    <div className="relative overflow-hidden rounded-panel glass p-6">
+      <div className="pointer-events-none absolute inset-0 bg-hud-grid opacity-[0.35]" aria-hidden="true" />
+      <div className="relative z-10">
+      <div className="mb-6 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-control border border-hairline bg-surface-raised">
+          <i className="fas fa-history text-lg text-accent"></i>
         </div>
         <div>
-          <h2 className="text-xl font-bold text-white">Recent Activity</h2>
-          <p className="text-sm text-purple-200/70">Latest system events and updates</p>
+          <h2 className="font-display text-lg font-semibold tracking-tight text-ink">Recent Activity</h2>
+          <p className="text-sm text-ink-tertiary">Latest system events and updates</p>
         </div>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-8">
-          <div className="w-8 h-8 border-3 border-purple-500/30 border-t-purple-500 rounded-full animate-spin"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-hairline border-t-stellar-400"></div>
         </div>
       ) : activities.length > 0 ? (
         <div className="space-y-3">
           {activities.map((activity, index) => (
             <div
               key={activity.id}
-              className={`p-4 rounded-xl border backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] animate-fadeIn ${getActivityColor(activity.type)}`}
+              className={`animate-fadeIn rounded-card border p-4 transition-colors duration-300 ${getActivityColor(activity.type)}`}
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <div className="flex items-start gap-3">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${getIconColor(activity.type)}`}>
+                <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-control ${getIconColor(activity.type)}`}>
                   <i className={`fas ${getActivityIcon(activity.type)}`}></i>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-medium text-sm leading-relaxed">{activity.message}</p>
-                  <p className="text-xs text-gray-300/70 mt-1">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium leading-relaxed text-ink">{activity.message}</p>
+                  <p className="mt-1 font-mono text-xs text-ink-tertiary">
                     {formatRelativeTime(activity.created_at)}
                   </p>
                 </div>
@@ -191,19 +193,20 @@ const RecentActivity = forwardRef<RecentActivityRef>((props, ref) => {
           ))}
         </div>
       ) : (
-        <div className="text-center py-8">
-          <i className="fas fa-inbox text-purple-300/30 text-4xl mb-3"></i>
-          <p className="text-purple-200/50 text-sm">No recent activity</p>
+        <div className="py-8 text-center">
+          <i className="fas fa-inbox mb-3 text-4xl text-ink-tertiary/40"></i>
+          <p className="text-sm text-ink-tertiary">No recent activity</p>
         </div>
       )}
 
       <button
         onClick={toggleShowAll}
-        className="w-full mt-6 py-3 px-4 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-200 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium"
+        className="btn-space btn-secondary mt-6 w-full text-sm"
       >
         <i className={`fas ${showAll ? 'fa-chevron-up' : 'fa-list'}`}></i>
         {showAll ? 'Show Less' : 'View All Activity'}
       </button>
+      </div>
     </div>
   );
 });

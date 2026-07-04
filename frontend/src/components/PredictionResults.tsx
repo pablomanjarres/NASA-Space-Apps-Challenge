@@ -340,48 +340,50 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
       setLoadingAction(null);
     }
   };  return mounted ? createPortal(
-    <div className="fixed inset-0 bg-gradient-to-br from-gray-100 via-white to-gray-100 dark:from-gray-900 dark:via-black dark:to-gray-900 z-50 overflow-hidden">
-      {/* Animated background overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-blue-500/5 dark:from-cyan-500/10 dark:via-transparent dark:to-blue-500/10 animate-pulse" />
+    <div style={{ backgroundColor: 'var(--bg)' }} className="fixed inset-0 z-50 overflow-hidden">
+      {/* Ambient background overlay */}
+      <div className="pointer-events-none absolute inset-0 bg-nebula-veil" aria-hidden="true" />
 
       {/* Main content container - full page */}
-      <div className="relative h-full flex flex-col">
+      <div className="relative flex h-full flex-col">
         {/* Header - Fixed */}
-        <div className="bg-gradient-to-r from-cyan-600 via-cyan-500 to-blue-600 shadow-2xl">
-          <div className="container mx-auto px-3 sm:px-6 md:px-8 py-4 md:py-6">
-            <div className="flex justify-between items-start gap-2">
-              <div className="space-y-2 md:space-y-3 flex-1 min-w-0">
-                <div className="flex items-center gap-2 md:gap-4 flex-wrap">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight">Prediction Results</h2>
-                  <span className="px-2 sm:px-3 md:px-4 py-1 md:py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-xs sm:text-sm font-semibold text-white whitespace-nowrap">
+        <div className="relative overflow-hidden border-b border-hairline bg-surface-raised shadow-panel">
+          <div className="pointer-events-none absolute inset-0 bg-nebula-veil opacity-60" aria-hidden="true" />
+          <div className="container relative mx-auto px-3 py-4 sm:px-6 md:px-8 md:py-6">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1 space-y-2 md:space-y-3">
+                <div className="flex flex-wrap items-center gap-2 md:gap-4">
+                  <p className="text-eyebrow text-ink-tertiary">Mission Control</p>
+                  <h2 className="w-full font-display text-xl font-semibold tracking-tight text-ink sm:text-2xl md:text-3xl">Prediction Results</h2>
+                  <span className="whitespace-nowrap rounded-pill border border-hairline bg-surface px-3 py-1 font-mono text-xs font-semibold text-accent sm:text-sm">
                     {results.total_predictions} predictions
                   </span>
                 </div>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 md:gap-6 text-white/90 text-xs sm:text-sm">
+                <div className="flex flex-col gap-2 text-xs text-ink-secondary sm:flex-row sm:items-center sm:gap-4 md:gap-6 sm:text-sm">
                   <div className="flex items-center gap-1.5 sm:gap-2">
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 flex-shrink-0 text-ink-tertiary sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                     </svg>
-                    <span className="flex-shrink-0">Job ID:</span>
-                    <code className="bg-white/20 backdrop-blur-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-md font-mono text-xs sm:text-sm truncate max-w-[150px] sm:max-w-none" title={results.job_id}>
+                    <span className="flex-shrink-0 text-ink-tertiary">Job ID:</span>
+                    <code className="max-w-[150px] truncate rounded-control border border-hairline bg-surface-sunken px-2 py-0.5 font-mono text-xs text-ink-secondary sm:max-w-none sm:px-3 sm:py-1 sm:text-sm" title={results.job_id}>
                       {results.job_id}
                     </code>
                   </div>
                   <div className="flex items-center gap-1.5 sm:gap-2">
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 flex-shrink-0 text-ink-tertiary sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
                     </svg>
-                    <span className="flex-shrink-0">Dataset:</span>
-                    <span className="font-semibold uppercase">{results.dataset_type}</span>
+                    <span className="flex-shrink-0 text-ink-tertiary">Dataset:</span>
+                    <span className="font-mono font-semibold uppercase text-accent">{results.dataset_type}</span>
                   </div>
                 </div>
               </div>
               <button
                 onClick={onClose}
-                className="text-white hover:bg-white/20 rounded-full p-2 sm:p-3 transition-all duration-200 hover:scale-110 hover:rotate-90 backdrop-blur-sm flex-shrink-0 touch-manipulation"
+                className="flex-shrink-0 rounded-control border border-hairline bg-surface p-2 text-ink-secondary transition-colors duration-200 hover:border-hairline-strong hover:text-ink touch-manipulation sm:p-3"
                 aria-label="Close"
               >
-                <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-6 w-6 sm:h-7 sm:w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -394,35 +396,37 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
           <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 md:space-y-8">
             
             {/* Researcher Mode: Advanced Statistics */}
-            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-2xl border border-purple-200 dark:border-purple-700/50 p-4 sm:p-6 md:p-8">
-              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                <div className="w-1 h-6 sm:h-8 bg-gradient-to-b from-purple-400 to-indigo-500 rounded-full" />
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="relative overflow-hidden rounded-panel glass p-4 sm:p-6 md:p-8">
+              <div className="pointer-events-none absolute inset-0 bg-hud-grid opacity-[0.35]" aria-hidden="true" />
+              <div className="relative">
+              <div className="mb-4 flex items-center gap-3 sm:mb-6">
+                <div className="h-6 w-1 rounded-pill bg-stellar-400 sm:h-8" />
+                <h3 className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-ink sm:text-xl md:text-2xl">
+                  <svg className="h-5 w-5 text-accent sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                   Researcher Statistics
                 </h3>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 md:gap-6">
                 {/* Total Candidates */}
-                <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg p-4 border border-purple-300 dark:border-purple-600/50">
-                  <div className="text-purple-600 dark:text-purple-400 text-xs font-bold uppercase tracking-wider mb-2">Total Candidates</div>
-                  <div className="text-3xl font-bold text-gray-900 dark:text-white">{results.total_predictions}</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Analyzed Objects</div>
+                <div className="rounded-card border border-hairline bg-surface-raised p-4">
+                  <div className="text-eyebrow mb-2 text-ink-tertiary">Total Candidates</div>
+                  <div className="font-mono text-3xl font-semibold text-ink">{results.total_predictions}</div>
+                  <div className="mt-1 text-xs text-ink-tertiary">Analyzed Objects</div>
                 </div>
 
                 {/* High Confidence Count */}
                 {(() => {
-                  const highConfCount = results.predictions.filter(p => 
+                  const highConfCount = results.predictions.filter(p =>
                     p.confidence[p.predicted_class] >= 0.9
                   ).length;
                   const percentage = ((highConfCount / results.total_predictions) * 100).toFixed(1);
                   return (
-                    <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg p-4 border border-green-300 dark:border-green-600/50">
-                      <div className="text-green-600 dark:text-green-400 text-xs font-bold uppercase tracking-wider mb-2">High Confidence</div>
-                      <div className="text-3xl font-bold text-gray-900 dark:text-white">{highConfCount}</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">{percentage}% (≥90% confidence)</div>
+                    <div className="rounded-card border border-hairline bg-surface-raised p-4">
+                      <div className="text-eyebrow mb-2 text-ink-tertiary">High Confidence</div>
+                      <div className="font-mono text-3xl font-semibold text-accent">{highConfCount}</div>
+                      <div className="mt-1 font-mono text-xs text-ink-tertiary">{percentage}% (≥90% confidence)</div>
                     </div>
                   );
                 })()}
@@ -433,26 +437,26 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
                     return sum + p.confidence[p.predicted_class];
                   }, 0) / results.total_predictions;
                   return (
-                    <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg p-4 border border-blue-300 dark:border-blue-600/50">
-                      <div className="text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">Avg Confidence</div>
-                      <div className="text-3xl font-bold text-gray-900 dark:text-white">{(avgConfidence * 100).toFixed(1)}%</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Model Certainty</div>
+                    <div className="rounded-card border border-hairline bg-surface-raised p-4">
+                      <div className="text-eyebrow mb-2 text-ink-tertiary">Avg Confidence</div>
+                      <div className="font-mono text-3xl font-semibold text-accent">{(avgConfidence * 100).toFixed(1)}%</div>
+                      <div className="mt-1 text-xs text-ink-tertiary">Model Certainty</div>
                     </div>
                   );
                 })()}
 
                 {/* Unique Classes */}
-                <div className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg p-4 border border-cyan-300 dark:border-cyan-600/50">
-                  <div className="text-cyan-600 dark:text-cyan-400 text-xs font-bold uppercase tracking-wider mb-2">Unique Classes</div>
-                  <div className="text-3xl font-bold text-gray-900 dark:text-white">{Object.keys(classDistribution).length}</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Categories Found</div>
+                <div className="rounded-card border border-hairline bg-surface-raised p-4">
+                  <div className="text-eyebrow mb-2 text-ink-tertiary">Unique Classes</div>
+                  <div className="font-mono text-3xl font-semibold text-ink">{Object.keys(classDistribution).length}</div>
+                  <div className="mt-1 text-xs text-ink-tertiary">Categories Found</div>
                 </div>
               </div>
 
               {/* Confidence Distribution Chart */}
-              <div className="mt-6 bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-lg p-4 border border-purple-300 dark:border-purple-600/50">
-                <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mt-6 rounded-card border border-hairline bg-surface-raised p-4">
+                <h4 className="mb-4 flex items-center gap-2 font-display text-sm font-semibold text-ink">
+                  <svg className="h-4 w-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   Confidence Score Distribution
@@ -468,23 +472,23 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
                     return { range: `${(min * 100).toFixed(0)}-${(max * 100).toFixed(0)}%`, count, min, max };
                   });
                   const maxCount = Math.max(...distribution.map(d => d.count));
-                  
+
                   return (
                     <div className="space-y-2">
                       {distribution.map((bin, idx) => (
                         <div key={idx} className="flex items-center gap-3">
-                          <div className="w-24 text-xs font-mono text-gray-700 dark:text-gray-300">{bin.range}</div>
-                          <div className="flex-1 bg-gray-200 dark:bg-gray-900/50 rounded-full h-6 overflow-hidden">
+                          <div className="w-24 font-mono text-xs text-ink-tertiary">{bin.range}</div>
+                          <div className="h-6 flex-1 overflow-hidden rounded-pill bg-surface-sunken">
                             <div
-                              className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-end pr-2 transition-all duration-500"
+                              className="flex h-full items-center justify-end rounded-pill bg-stellar-400 pr-2 transition-all duration-500"
                               style={{ width: `${(bin.count / maxCount) * 100}%` }}
                             >
                               {bin.count > 0 && (
-                                <span className="text-xs font-bold text-white">{bin.count}</span>
+                                <span className="font-mono text-xs font-bold text-void-900">{bin.count}</span>
                               )}
                             </div>
                           </div>
-                          <div className="w-12 text-xs text-gray-600 dark:text-gray-400 text-right">
+                          <div className="w-12 text-right font-mono text-xs text-ink-tertiary">
                             {((bin.count / results.total_predictions) * 100).toFixed(1)}%
                           </div>
                         </div>
@@ -493,15 +497,16 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
                   );
                 })()}
               </div>
+              </div>
             </div>
 
             {/* Stats Summary */}
-            <div className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700/50 p-4 sm:p-6 md:p-8">
-              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-                <div className="w-1 h-6 sm:h-8 bg-gradient-to-b from-cyan-400 to-blue-500 rounded-full" />
-                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Class Distribution</h3>
+            <div className="rounded-panel glass p-4 sm:p-6 md:p-8">
+              <div className="mb-4 flex items-center gap-3 sm:mb-6">
+                <div className="h-6 w-1 rounded-pill bg-stellar-400 sm:h-8" />
+                <h3 className="font-display text-lg font-semibold tracking-tight text-ink sm:text-xl md:text-2xl">Class Distribution</h3>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 md:gap-6">
                 {Object.entries(classDistribution).map(([className, count]) => {
                   const avg = avgConfidence[className];
                   const avgConf = avg ? (avg.sum / avg.count) : 0;
@@ -510,22 +515,22 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
                   return (
                     <div
                       key={className}
-                      className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/80 dark:to-gray-800/80 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6 border border-gray-300 dark:border-gray-600/50 hover:border-cyan-500/50 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-cyan-500/20"
+                      className="rounded-card border border-hairline bg-surface-raised p-3 transition-colors duration-300 hover:border-hairline-strong sm:p-4 md:p-6"
                     >
-                      <div className="text-cyan-600 dark:text-cyan-400 font-bold text-[10px] sm:text-xs uppercase tracking-wider mb-2 sm:mb-3 truncate" title={className}>
+                      <div className="text-eyebrow mb-2 truncate text-ink-tertiary sm:mb-3" title={className}>
                         {className}
                       </div>
-                      <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">{count}</div>
+                      <div className="mb-1 font-mono text-2xl font-semibold text-ink sm:mb-2 sm:text-3xl md:text-4xl">{count}</div>
                       <div className="space-y-1">
-                        <div className="text-sm text-gray-700 dark:text-gray-300 font-semibold">{percentage}%</div>
+                        <div className="font-mono text-sm font-semibold text-ink-secondary">{percentage}%</div>
                         <div className="flex items-center gap-2">
-                          <div className="flex-1 bg-gray-200 dark:bg-gray-900/50 rounded-full h-2 overflow-hidden">
+                          <div className="h-2 flex-1 overflow-hidden rounded-pill bg-surface-sunken">
                             <div
-                              className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-500"
+                              className="h-full rounded-pill bg-stellar-400 transition-all duration-500"
                               style={{ width: `${avgConf * 100}%` }}
                             />
                           </div>
-                          <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">
+                          <span className="font-mono text-xs text-ink-tertiary">
                             {(avgConf * 100).toFixed(0)}%
                           </span>
                         </div>
@@ -537,24 +542,24 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
             </div>
 
             {/* Controls */}
-            <div className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700/50 p-3 sm:p-4 md:p-6">
-              <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="rounded-panel glass p-3 sm:p-4 md:p-6">
+              <h4 className="mb-3 flex items-center gap-2 font-display text-sm font-semibold text-ink">
+                <svg className="h-4 w-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                Export & Visualization Tools
+                Export &amp; Visualization Tools
               </h4>
               <div className="flex flex-col gap-3">
                 {/* Main action buttons */}
-                <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
+                <div className="flex flex-col flex-wrap gap-2 sm:flex-row sm:gap-3">
                   <button
                     onClick={viewAll3D}
                     disabled={loadingAction === '3d-all'}
-                    className="px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-2 sm:gap-3 font-semibold shadow-lg hover:shadow-indigo-500/50 active:scale-95 sm:hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base touch-manipulation"
+                    className="btn-space btn-primary touch-manipulation disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {loadingAction === '3d-all' ? (
                       <>
-                        <svg className="animate-spin w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24">
+                        <svg className="h-4 w-4 animate-spin sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
@@ -562,22 +567,22 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
                       </>
                     ) : (
                       <>
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
                         </svg>
                         <span className="whitespace-nowrap">View All in 3D</span>
                       </>
                     )}
                   </button>
-                  
+
                   <button
                     onClick={downloadExoplanetTable}
                     disabled={loadingAction === 'download-table'}
-                    className="px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-2 sm:gap-3 font-semibold shadow-lg hover:shadow-purple-500/50 active:scale-95 sm:hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base touch-manipulation"
+                    className="btn-space btn-secondary touch-manipulation disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {loadingAction === 'download-table' ? (
                       <>
-                        <svg className="animate-spin w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24">
+                        <svg className="h-4 w-4 animate-spin sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
@@ -585,7 +590,7 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
                       </>
                     ) : (
                       <>
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                         </svg>
                         <span className="whitespace-nowrap">Download Full Table</span>
@@ -596,11 +601,11 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
                   <button
                     onClick={downloadScreenshot}
                     disabled={loadingAction === 'screenshot'}
-                    className="px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-pink-600 to-pink-500 hover:from-pink-500 hover:to-pink-400 text-white rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-2 sm:gap-3 font-semibold shadow-lg hover:shadow-pink-500/50 active:scale-95 sm:hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base touch-manipulation"
+                    className="btn-space btn-secondary touch-manipulation disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {loadingAction === 'screenshot' ? (
                       <>
-                        <svg className="animate-spin w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24">
+                        <svg className="h-4 w-4 animate-spin sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
@@ -608,7 +613,7 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
                       </>
                     ) : (
                       <>
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
@@ -619,85 +624,85 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
                 </div>
 
                 {/* Secondary export buttons */}
-                <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
+                <div className="flex flex-col flex-wrap gap-2 sm:flex-row sm:gap-3">
                   <button
                     onClick={downloadCSV}
-                    className="px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-2 sm:gap-3 font-semibold shadow-lg hover:shadow-green-500/50 active:scale-95 sm:hover:scale-105 text-sm sm:text-base touch-manipulation"
+                    className="btn-space btn-secondary touch-manipulation"
                   >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     <span className="whitespace-nowrap">Predictions CSV</span>
                   </button>
                   <button
                     onClick={downloadJSON}
-                    className="px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white rounded-lg sm:rounded-xl transition-all duration-200 flex items-center justify-center gap-2 sm:gap-3 font-semibold shadow-lg hover:shadow-blue-500/50 active:scale-95 sm:hover:scale-105 text-sm sm:text-base touch-manipulation"
+                    className="btn-space btn-secondary touch-manipulation"
                   >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     <span className="whitespace-nowrap">Results JSON</span>
                   </button>
-                  <label className="flex items-center justify-center sm:justify-start gap-2 sm:gap-3 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700/50 backdrop-blur-sm px-3 sm:px-4 md:px-5 py-2.5 sm:py-3 rounded-lg sm:rounded-xl cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700/70 transition-all duration-200 text-sm sm:text-base touch-manipulation flex-1">
+                  <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-control border border-hairline bg-surface px-4 py-2.5 text-sm text-ink-secondary transition-colors duration-200 hover:border-hairline-strong hover:text-ink touch-manipulation sm:justify-start sm:gap-3 sm:text-base">
                     <input
                       type="checkbox"
                       checked={showConfidence}
                       onChange={(e) => setShowConfidence(e.target.checked)}
-                      className="w-4 h-4 sm:w-5 sm:h-5 rounded border-gray-400 dark:border-gray-500 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-white dark:focus:ring-offset-gray-800 cursor-pointer"
+                      className="h-4 w-4 cursor-pointer rounded border-hairline-strong accent-stellar-400 sm:h-5 sm:w-5"
                     />
-                    <span className="font-medium whitespace-nowrap">Show Confidence Scores</span>
+                    <span className="whitespace-nowrap font-medium">Show Confidence Scores</span>
                   </label>
                 </div>
               </div>
             </div>
 
             {/* Predictions Table */}
-            <div className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700/50 overflow-hidden">
-              <div className="overflow-x-auto -mx-3 sm:mx-0">
-                <table className="w-full text-xs sm:text-sm text-gray-900 dark:text-white">
-                  <thead className="bg-gray-100 dark:bg-gray-900/80 backdrop-blur-sm sticky top-0 z-10">
-                    <tr className="border-b border-gray-300 dark:border-gray-700">
-                      <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider text-xs sm:text-sm">Row</th>
-                      <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider text-xs sm:text-sm">Predicted Class</th>
-                      {showConfidence && <th className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-left font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider text-xs sm:text-sm">Confidence Distribution</th>}
+            <div className="overflow-hidden rounded-panel glass">
+              <div className="-mx-3 overflow-x-auto sm:mx-0">
+                <table className="w-full text-xs text-ink sm:text-sm">
+                  <thead style={{ backgroundColor: 'var(--bg)' }} className="sticky top-0 z-10">
+                    <tr className="border-b border-hairline">
+                      <th className="px-3 py-3 text-left text-eyebrow text-ink-tertiary sm:px-4 sm:py-4 md:px-6">Row</th>
+                      <th className="px-3 py-3 text-left text-eyebrow text-ink-tertiary sm:px-4 sm:py-4 md:px-6">Predicted Class</th>
+                      {showConfidence && <th className="px-3 py-3 text-left text-eyebrow text-ink-tertiary sm:px-4 sm:py-4 md:px-6">Confidence Distribution</th>}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700/50">
+                  <tbody className="divide-y divide-hairline">
                     {currentPredictions.map((pred, idx) => (
                       <tr
                         key={pred.row_index}
-                        className="hover:bg-gray-100 dark:hover:bg-gray-700/30 transition-all duration-200 group active:bg-gray-200 dark:active:bg-gray-700/50"
+                        className="group transition-colors duration-200 hover:bg-surface"
                         style={{ animationDelay: `${idx * 50}ms` }}
                       >
-                        <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-5 font-mono text-gray-600 dark:text-gray-400 text-xs sm:text-sm md:text-base group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                        <td className="px-3 py-3 font-mono text-xs text-ink-tertiary transition-colors group-hover:text-accent sm:px-4 sm:py-4 sm:text-sm md:px-6 md:py-5 md:text-base">
                           #{pred.row_index}
                         </td>
-                        <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-5">
-                          <span className="inline-block px-3 sm:px-4 md:px-5 py-1.5 sm:py-2 bg-gradient-to-r from-cyan-600 to-cyan-500 rounded-full font-bold text-xs sm:text-sm md:text-base text-white shadow-lg group-hover:shadow-cyan-500/50 sm:group-hover:scale-105 transition-all duration-200">
+                        <td className="px-3 py-3 sm:px-4 sm:py-4 md:px-6 md:py-5">
+                          <span className="inline-block rounded-pill border border-stellar-400/25 bg-stellar-400/10 px-3 py-1.5 font-mono text-xs font-semibold text-stellar-200 sm:px-4 sm:py-2 sm:text-sm md:px-5 md:text-base">
                             {pred.predicted_class}
                           </span>
                         </td>
                         {showConfidence && (
-                          <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-5">
+                          <td className="px-3 py-3 sm:px-4 sm:py-4 md:px-6 md:py-5">
                             <div className="flex flex-col gap-1.5 sm:gap-2 md:gap-2.5">
                               {Object.entries(pred.confidence)
                                 .sort(([, a], [, b]) => b - a)
                                 .map(([className, conf]) => (
                                   <div key={className} className="flex items-center gap-2 sm:gap-3">
-                                    <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 w-20 sm:w-24 md:w-28 font-medium truncate" title={className}>
+                                    <span className="w-20 truncate text-xs font-medium text-ink-secondary sm:w-24 sm:text-sm md:w-28" title={className}>
                                       {className}
                                     </span>
-                                    <div className="flex-1 bg-gray-200 dark:bg-gray-900/50 rounded-full h-2 sm:h-2.5 md:h-3 overflow-hidden shadow-inner">
+                                    <div className="h-2 flex-1 overflow-hidden rounded-pill bg-surface-sunken sm:h-2.5 md:h-3">
                                       <div
-                                        className={`h-full transition-all duration-500 ${
+                                        className={`h-full rounded-pill transition-all duration-500 ${
                                           className === pred.predicted_class
-                                            ? 'bg-gradient-to-r from-cyan-500 to-blue-500 shadow-lg shadow-cyan-500/50'
-                                            : 'bg-gray-400 dark:bg-gray-600'
+                                            ? 'bg-stellar-400'
+                                            : 'bg-nebula-500/40'
                                         }`}
                                         style={{ width: `${conf * 100}%` }}
                                       />
                                     </div>
-                                    <span className="text-xs sm:text-sm font-mono w-10 sm:w-12 md:w-14 text-right font-semibold text-gray-700 dark:text-gray-300">
+                                    <span className="w-10 text-right font-mono text-xs font-semibold text-ink-secondary sm:w-12 sm:text-sm md:w-14">
                                       {(conf * 100).toFixed(1)}%
                                     </span>
                                   </div>
@@ -714,37 +719,37 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="bg-white/80 dark:bg-gray-800/50 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700/50 p-3 sm:p-4 md:p-6">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+              <div className="rounded-panel glass p-3 sm:p-4 md:p-6">
+                <div className="flex flex-col items-center justify-between gap-3 sm:flex-row sm:gap-4">
                   <button
                     onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
                     disabled={currentPage === 0}
-                    className="w-full sm:w-auto px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg sm:rounded-xl transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-gray-200 dark:disabled:hover:bg-gray-700 font-semibold flex items-center justify-center gap-2 active:scale-95 sm:hover:scale-105 sm:hover:shadow-lg text-sm sm:text-base touch-manipulation"
+                    className="btn-space btn-secondary w-full touch-manipulation disabled:cursor-not-allowed disabled:opacity-30 sm:w-auto"
                   >
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                     <span>Previous</span>
                   </button>
-                  <div className="text-gray-900 dark:text-white font-semibold bg-gray-100 dark:bg-gray-700/50 backdrop-blur-sm px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-lg sm:rounded-xl text-center text-sm sm:text-base">
-                    <span className="text-cyan-600 dark:text-cyan-400 text-base sm:text-lg">{currentPage + 1}</span>
-                    <span className="text-gray-500 dark:text-gray-400 mx-1 sm:mx-2">/</span>
-                    <span className="text-gray-700 dark:text-gray-300">{totalPages}</span>
-                    <span className="hidden sm:inline text-gray-400 dark:text-gray-500 mx-2 md:mx-3">•</span>
-                    <span className="hidden md:inline text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
+                  <div className="rounded-control border border-hairline bg-surface px-4 py-2 text-center font-mono text-sm text-ink-secondary sm:px-4 sm:py-2.5 sm:text-base md:px-6 md:py-3">
+                    <span className="text-base text-accent sm:text-lg">{currentPage + 1}</span>
+                    <span className="mx-1 text-ink-tertiary sm:mx-2">/</span>
+                    <span className="text-ink">{totalPages}</span>
+                    <span className="mx-2 hidden text-ink-tertiary sm:inline md:mx-3">•</span>
+                    <span className="hidden text-xs text-ink-tertiary md:inline sm:text-sm">
                       Showing {startIndex + 1}-{Math.min(endIndex, results.predictions.length)} of {results.predictions.length}
                     </span>
-                    <span className="block sm:hidden text-gray-600 dark:text-gray-400 text-xs mt-1">
+                    <span className="mt-1 block text-xs text-ink-tertiary sm:hidden">
                       {startIndex + 1}-{Math.min(endIndex, results.predictions.length)} of {results.predictions.length}
                     </span>
                   </div>
                   <button
                     onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
                     disabled={currentPage === totalPages - 1}
-                    className="w-full sm:w-auto px-4 sm:px-5 md:px-6 py-2.5 sm:py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg sm:rounded-xl transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-gray-200 dark:disabled:hover:bg-gray-700 font-semibold flex items-center justify-center gap-2 active:scale-95 sm:hover:scale-105 sm:hover:shadow-lg text-sm sm:text-base touch-manipulation"
+                    className="btn-space btn-secondary w-full touch-manipulation disabled:cursor-not-allowed disabled:opacity-30 sm:w-auto"
                   >
                     <span>Next</span>
-                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
@@ -760,13 +765,13 @@ export const PredictionResults: React.FC<PredictionResultsProps> = ({ results, o
         {/* Floating AI Chatbot Button - Bottom Right */}
         <button
           onClick={() => setIsChatbotOpen(true)}
-          className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 hover:from-purple-600 hover:via-pink-600 hover:to-blue-600 text-white rounded-full shadow-2xl hover:shadow-purple-500/50 hover:scale-110 transition-all duration-300 flex items-center justify-center group z-[9999] animate-pulse"
+          className="group fixed bottom-8 right-8 z-[9999] flex h-16 w-16 items-center justify-center rounded-full border border-hairline-strong bg-surface-raised text-accent shadow-panel backdrop-blur-md transition-shadow duration-300 hover:shadow-glow-stellar"
           title="Ask AI about predictions"
           aria-label="Open AI Assistant"
         >
           <div className="relative">
-            <i className="fas fa-robot text-2xl group-hover:rotate-12 transition-transform duration-300"></i>
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-ping"></div>
+            <i className="fas fa-robot text-2xl"></i>
+            <div className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-stellar-400"></div>
           </div>
         </button>
 

@@ -36,11 +36,12 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, maxWidth = '2x
 
   return createPortal(
     <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-2 sm:p-4 md:p-6 overscroll-contain"
+      className="fixed inset-0 bg-void-950/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-2 sm:p-4 md:p-6 overscroll-contain"
       onClick={onClose}
     >
       <div
-        className={`bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-2xl ${fullscreen ? 'w-full h-full max-w-none max-h-none' : `${maxWidthClasses[maxWidth]} w-full max-h-[95vh] sm:max-h-[90vh]`} ${flexLayout ? 'overflow-hidden flex flex-col' : 'overflow-y-auto'} themed-scrollbar touch-manipulation`}
+        style={{ backgroundColor: 'var(--bg)' }}
+        className={`rounded-panel border border-hairline-strong shadow-elevated ${fullscreen ? 'w-full h-full max-w-none max-h-none' : `${maxWidthClasses[maxWidth]} w-full max-h-[95vh] sm:max-h-[90vh]`} ${flexLayout ? 'overflow-hidden flex flex-col' : 'overflow-y-auto'} themed-scrollbar touch-manipulation`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

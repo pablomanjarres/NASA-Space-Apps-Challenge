@@ -158,35 +158,37 @@ Provide accurate, scientific, and helpful responses. Use emojis occasionally to 
   return (
     <>
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 animate-[fadeIn_0.2s_ease-out]"
+      <div
+        className="fixed inset-0 bg-void-950/70 backdrop-blur-sm z-50 animate-[fadeIn_0.2s_ease-out]"
         onClick={onClose}
       />
 
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-        <div 
-          className="bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-2xl w-full max-w-3xl h-[600px] flex flex-col pointer-events-auto border-2 border-purple-400/50 dark:border-purple-600/50 animate-[slideInRight_0.3s_ease-out]"
+        <div
+          style={{ backgroundColor: 'var(--bg)' }}
+          className="rounded-panel border border-hairline-strong shadow-elevated w-full max-w-3xl h-[600px] flex flex-col pointer-events-auto animate-[slideInRight_0.3s_ease-out]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="p-4 border-b border-purple-200/50 dark:border-purple-700/50 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-t-2xl">
-            <div className="flex items-center justify-between">
+          <div className="relative overflow-hidden rounded-t-panel border-b border-hairline bg-surface-raised p-4">
+            <div className="pointer-events-none absolute inset-0 bg-nebula-veil opacity-60" aria-hidden="true" />
+            <div className="relative flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="relative">
-                  <i className="fas fa-robot text-3xl text-white"></i>
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
+                <div className="relative flex h-11 w-11 items-center justify-center rounded-control border border-hairline bg-surface-sunken">
+                  <i className="fas fa-robot text-xl text-accent"></i>
+                  <div className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-stellar-400 shadow-glow-stellar"></div>
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <h2 className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-ink">
                     AI Exoplanet Assistant
-                    <span className="text-xs bg-white/20 px-2 py-1 rounded-full font-semibold">GPT-3.5</span>
+                    <span className="rounded-pill border border-hairline bg-surface px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-ink-tertiary">GPT-3.5</span>
                   </h2>
-                  <p className="text-sm text-purple-100">
-                    {csvData?.length || 0} predictions • {modelType?.toUpperCase() || 'Unknown'} dataset
+                  <p className="text-sm text-ink-secondary">
+                    <span className="font-mono text-accent">{csvData?.length || 0}</span> predictions • {modelType?.toUpperCase() || 'Unknown'} dataset
                   </p>
                   {rateLimitInfo && (
-                    <p className="text-xs text-white/80 mt-1 flex items-center gap-1">
+                    <p className="mt-1 flex items-center gap-1 font-mono text-xs text-ink-tertiary">
                       <i className="fas fa-clock"></i>
                       {rateLimitInfo.remaining} / {rateLimitInfo.limit} messages remaining today
                     </p>
@@ -196,7 +198,7 @@ Provide accurate, scientific, and helpful responses. Use emojis occasionally to 
               <div className="flex items-center gap-2">
                 <button
                   onClick={clearChat}
-                  className="px-3 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all duration-200 flex items-center gap-2 text-sm font-semibold"
+                  className="flex items-center gap-2 rounded-control border border-hairline bg-surface px-3 py-2 text-sm font-medium text-ink-secondary transition-colors duration-200 hover:border-hairline-strong hover:text-ink"
                   title="Clear chat"
                 >
                   <i className="fas fa-trash-alt"></i>
@@ -204,7 +206,7 @@ Provide accurate, scientific, and helpful responses. Use emojis occasionally to 
                 </button>
                 <button
                   onClick={onClose}
-                  className="w-10 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 text-white rounded-lg transition-all duration-200"
+                  className="flex h-10 w-10 items-center justify-center rounded-control border border-hairline bg-surface text-ink-secondary transition-colors duration-200 hover:border-hairline-strong hover:text-ink"
                   title="Close"
                 >
                   <i className="fas fa-times text-xl"></i>
@@ -214,31 +216,31 @@ Provide accurate, scientific, and helpful responses. Use emojis occasionally to 
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-purple-400/30 scrollbar-track-transparent">
+          <div className="flex-1 space-y-4 overflow-y-auto p-4 themed-scrollbar">
             {messages.map((message, idx) => (
               <div
                 key={idx}
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-[slideInRight_0.3s_ease-out]`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl p-4 ${
+                  className={`max-w-[80%] rounded-card border p-4 ${
                     message.role === 'user'
-                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                      : 'bg-white dark:bg-gray-800 border border-purple-200/50 dark:border-purple-700/50 text-gray-800 dark:text-gray-200'
-                  } shadow-lg`}
+                      ? 'border-stellar-400/25 bg-stellar-400/10 text-ink'
+                      : 'border-hairline bg-surface-raised text-ink-secondary'
+                  }`}
                 >
                   <div className="flex items-start gap-3">
                     {message.role === 'assistant' && (
-                      <i className="fas fa-robot text-purple-500 dark:text-purple-400 text-xl mt-1"></i>
+                      <i className="fas fa-robot mt-1 text-xl text-accent"></i>
                     )}
                     <div className="flex-1">
-                      <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
-                      <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-purple-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
+                      <p className={`mt-2 font-mono text-xs ${message.role === 'user' ? 'text-stellar-300/80' : 'text-ink-tertiary'}`}>
                         {message.timestamp.toLocaleTimeString()}
                       </p>
                     </div>
                     {message.role === 'user' && (
-                      <i className="fas fa-user text-white text-xl mt-1"></i>
+                      <i className="fas fa-user mt-1 text-xl text-accent"></i>
                     )}
                   </div>
                 </div>
@@ -246,13 +248,13 @@ Provide accurate, scientific, and helpful responses. Use emojis occasionally to 
             ))}
             {isLoading && (
               <div className="flex justify-start animate-[slideInRight_0.3s_ease-out]">
-                <div className="bg-white dark:bg-gray-800 border border-purple-200/50 dark:border-purple-700/50 rounded-2xl p-4 shadow-lg">
+                <div className="rounded-card border border-hairline bg-surface-raised p-4">
                   <div className="flex items-center gap-3">
-                    <i className="fas fa-robot text-purple-500 dark:text-purple-400 text-xl"></i>
+                    <i className="fas fa-robot text-xl text-accent"></i>
                     <div className="flex gap-2">
-                      <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                      <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                      <div className="h-2 w-2 rounded-full bg-stellar-400 animate-bounce" style={{ animationDelay: '0s' }}></div>
+                      <div className="h-2 w-2 rounded-full bg-stellar-300 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="h-2 w-2 rounded-full bg-nebula-400 animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -262,7 +264,7 @@ Provide accurate, scientific, and helpful responses. Use emojis occasionally to 
           </div>
 
           {/* Input Area */}
-          <div className="p-4 border-t border-purple-200/50 dark:border-purple-700/50 bg-white/50 dark:bg-gray-800/50 rounded-b-2xl">
+          <div className="rounded-b-panel border-t border-hairline bg-surface p-4">
             <div className="flex gap-3">
               <input
                 ref={inputRef}
@@ -272,18 +274,18 @@ Provide accurate, scientific, and helpful responses. Use emojis occasionally to 
                 onKeyPress={handleKeyPress}
                 placeholder="Ask me anything about the exoplanet predictions..."
                 disabled={isLoading}
-                className="flex-1 px-4 py-3 rounded-xl border-2 border-purple-300 dark:border-purple-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="flex-1 rounded-control border border-hairline bg-surface-sunken px-4 py-3 text-ink placeholder-ink-tertiary transition-colors focus:border-stellar-400/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               />
               <button
                 onClick={handleSendMessage}
                 disabled={!inputMessage.trim() || isLoading}
-                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-300 disabled:cursor-not-allowed flex items-center gap-2"
+                className="btn-space btn-primary disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <i className={`fas ${isLoading ? 'fa-spinner fa-spin' : 'fa-paper-plane'}`}></i>
                 <span className="hidden sm:inline">Send</span>
               </button>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+            <p className="mt-2 text-center text-xs text-ink-tertiary">
               <i className="fas fa-info-circle mr-1"></i>
               Powered by OpenAI GPT-3.5-Turbo • Your questions help improve the analysis
             </p>
