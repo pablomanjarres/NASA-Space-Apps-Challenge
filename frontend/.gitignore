@@ -8,3 +8,9 @@
 
 # Keep example file
 !.env.example
+
+# App source lib must be tracked for the deploy build.
+# (A parent .gitignore has a generic `lib/` rule that would otherwise ignore
+#  src/lib/demoFixtures.ts, breaking the deployed build.)
+!/src/lib/
+!/src/lib/**

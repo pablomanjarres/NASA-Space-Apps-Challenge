@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useImperativeHandle, forwardRef } from 'react';
+import { isDemoMode, demoRecentActivity } from '../lib/demoFixtures';
 
 interface Activity {
   id: number;
@@ -84,6 +85,20 @@ const RecentActivity = forwardRef<RecentActivityRef>((props, ref) => {
     if (!keepExisting) {
       setLoading(true);
     }
+
+    // DEMO mode: use bundled sample activity instead of the local backend log
+    // endpoint (which is unreachable / mixed-content on the deployed demo).
+    if (isDemoMode()) {
+      const activitiesWithType = demoRecentActivity().map((log) => ({
+        ...log,
+        type: getActivityType(log.message),
+      }));
+      setAllActivities(activitiesWithType);
+      setActivities(activitiesWithType.slice(0, showAll ? 8 : 4));
+      setLoading(false);
+      return;
+    }
+
     fetch('http://localhost:8000/api/v1/logs/all')
       .then(res => res.json())
       .then(data => {

@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { isDemoMode, demoChatResponsePayload } from '../../lib/demoFixtures';
 
 // In-memory storage for rate limiting (resets on deployment)
 // For production, use Redis or a database
@@ -51,6 +52,19 @@ function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    // DEMO mode (or no OpenAI key): return a graceful canned reply instead of
+    // erroring. Keeps the deployed demo working with no key configured.
+    if (isDemoMode() || !import.meta.env.OPENAI_API_KEY) {
+      return new Response(JSON.stringify(demoChatResponsePayload(MAX_MESSAGES_PER_DAY)), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'X-RateLimit-Limit': MAX_MESSAGES_PER_DAY.toString(),
+          'X-RateLimit-Remaining': MAX_MESSAGES_PER_DAY.toString(),
+        },
+      });
+    }
+
     // Get client IP
     const clientIP = getClientIP(request);
     
