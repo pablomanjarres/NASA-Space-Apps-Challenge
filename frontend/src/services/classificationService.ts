@@ -4,6 +4,9 @@
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://grit-x-awa-1035421252747.europe-west1.run.app';
 
+// Key-free DEMO mode: analysis calls resolve client-side instead of the backend.
+import { isDemoMode } from '../lib/demoFixtures';
+
 export interface PlanetAnalysisRequest {
   temperature_k?: number;
   radius_earth?: number;
@@ -94,6 +97,46 @@ class ClassificationService {
    * Analyze a planet's habitability and classification
    */
   async analyzePlanet(data: PlanetAnalysisRequest): Promise<PlanetAnalysisResponse> {
+    if (isDemoMode()) {
+      // Resolve entirely from the client-side classifiers below — no backend.
+      const temp = data.temperature_k;
+      const radius = data.radius_earth;
+      const starTemp = data.star_temperature_k;
+      const celsius = temp != null ? Math.round((temp - 273.15) * 10) / 10 : null;
+      return {
+        planet_classification: {
+          planet_type: this.classifyPlanetType(radius ?? 0),
+          radius_earth: radius,
+          description: 'Sample classification generated in demo mode (client-side, no live backend).',
+          likely_composition: radius != null && radius < 2 ? 'Rocky / terrestrial' : 'Volatile-rich / gaseous envelope',
+          temperature_k: temp,
+          temperature_celsius: celsius ?? undefined,
+          orbital_period_days: data.orbital_period_days,
+          orbital_class: this.getHabitabilityZone(temp ?? 0),
+        },
+        habitability_status: {
+          is_habitable: temp != null ? this.isHabitable(temp) : false,
+          is_conservative_habitable: temp != null ? this.isConservativeHabitable(temp) : false,
+          is_optimistic_habitable: temp != null ? temp >= 180 && temp <= 310 : false,
+          temperature_class: this.getHabitabilityZone(temp ?? 0),
+          temperature_celsius: celsius,
+          zone_description: 'Demo estimate derived from equilibrium temperature.',
+        },
+        star_classification: starTemp != null
+          ? {
+              spectral_type: this.classifyStarType(starTemp),
+              spectral_class_full: this.classifyStarType(starTemp),
+              color: '—',
+              temperature_k: starTemp,
+              description: 'Sample stellar classification (demo).',
+              relative_brightness: '—',
+              typical_mass_range: '—',
+              radius_solar: data.star_radius_solar,
+            }
+          : undefined,
+        habitability_score: this.calculateHabitabilityScore(temp, radius, data.insolation),
+      };
+    }
     return this.request<PlanetAnalysisResponse>('/api/v1/classifications/analyze', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -104,6 +147,7 @@ class ClassificationService {
    * Get information about all star types
    */
   async getStarTypes(): Promise<{ star_types: StarClassification[] }> {
+    if (isDemoMode()) return { star_types: [] };
     return this.request<{ star_types: StarClassification[] }>('/api/v1/classifications/star-types');
   }
 
@@ -111,6 +155,7 @@ class ClassificationService {
    * Get information about all planet types
    */
   async getPlanetTypes(): Promise<{ planet_types: PlanetClassification[] }> {
+    if (isDemoMode()) return { planet_types: [] };
     return this.request<{ planet_types: PlanetClassification[] }>('/api/v1/classifications/planet-types');
   }
 
@@ -118,6 +163,15 @@ class ClassificationService {
    * Get information about habitability zones
    */
   async getHabitabilityZones(): Promise<{ zones: HabitabilityZones }> {
+    if (isDemoMode()) {
+      return {
+        zones: {
+          strict: { min_temp_k: 273.15, max_temp_k: 373.15, min_temp_c: 0, max_temp_c: 100, description: 'Liquid-water range (demo)' },
+          conservative: { min_temp_k: 200, max_temp_k: 450, min_temp_c: -73.15, max_temp_c: 176.85, description: 'Conservative habitable zone (demo)' },
+          optimistic: { min_temp_k: 180, max_temp_k: 310, min_temp_c: -93.15, max_temp_c: 36.85, description: 'Optimistic habitable zone (demo)' },
+        },
+      };
+    }
     return this.request<{ zones: HabitabilityZones }>('/api/v1/classifications/habitability-zones');
   }
 

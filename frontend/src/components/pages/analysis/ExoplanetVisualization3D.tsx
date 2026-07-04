@@ -319,7 +319,7 @@ function CentralStar({
       {(isSelected || hovered) && (
         <Sphere args={[radius * 1.5, 32, 32]} position={[0, 0, 0]}>
           <meshBasicMaterial
-            color={isSelected ? '#667eea' : '#ffffff'}
+            color={isSelected ? '#22d3ee' : '#ffffff'}
             transparent
             opacity={isSelected ? 0.15 : 0.1}
             blending={THREE.AdditiveBlending}
@@ -520,7 +520,7 @@ function ExoplanetModel({
     if (temperature >= 200 && temperature <= 350) return '#5ab85a'; // Habitable zone - green
     if (temperature > 600) return '#ff6b4a'; // Hot orbit - red
     if (temperature < 200) return '#87ceeb'; // Cold orbit - blue
-    return '#667eea'; // Default - purple
+    return '#8b5cf6'; // Default - nebula violet (structure/other)
   }, [temperature]);
 
   // Create elliptical orbit path with inclination for 3D motion
@@ -671,7 +671,7 @@ function ExoplanetModel({
             map={texture}
             roughness={0.7}
             metalness={0.1}
-            emissive={isSelected ? '#667eea' : hovered ? '#667eea' : '#000000'}
+            emissive={isSelected ? '#22d3ee' : hovered ? '#22d3ee' : '#000000'}
             emissiveIntensity={isSelected ? 0.5 : hovered ? 0.3 : 0}
           />
         </Sphere>
@@ -682,7 +682,7 @@ function ExoplanetModel({
             <mesh>
               <torusGeometry args={[radius * 1.5, radius * 0.05, 16, 100]} />
               <meshBasicMaterial
-                color={isSelected ? '#667eea' : '#ffffff'}
+                color={isSelected ? '#22d3ee' : '#ffffff'}
                 transparent
                 opacity={0.6}
                 toneMapped={false}
@@ -708,7 +708,7 @@ function ExoplanetModel({
                 >
                   <sphereGeometry args={[0.05, 8, 8]} />
                   <meshBasicMaterial
-                    color={isSelected ? '#667eea' : '#ffffff'}
+                    color={isSelected ? '#22d3ee' : '#ffffff'}
                     transparent
                     opacity={0.8}
                     toneMapped={false}
@@ -723,36 +723,36 @@ function ExoplanetModel({
         {showLabel && (
           <Html distanceFactor={10}>
             <div className="relative">
-              {/* Tiny tooltip */}
-              <div className="relative bg-gray-900/95 text-white px-2 py-1.5 rounded-md text-[10px] border border-purple-500/40 pointer-events-none backdrop-blur-sm shadow-lg w-[140px]">
+              {/* Tiny telemetry tooltip */}
+              <div className="relative bg-void-900/95 text-ink px-2.5 py-2 rounded-md text-[10px] border border-stellar-400/25 pointer-events-none backdrop-blur-md shadow-panel w-[150px]">
                 {/* Planet name */}
-                <div className="font-bold text-[11px] text-purple-300 mb-1 truncate flex items-center gap-1">
+                <div className="font-display font-semibold text-[11px] text-stellar-300 mb-1 truncate flex items-center gap-1">
                   <i className="fas fa-circle text-[6px]"></i>
                   {name}
                 </div>
 
                 {/* Key stats only - ultra compact */}
-                <div className="space-y-0.5 text-[9px]">
+                <div className="space-y-0.5 text-[9px] font-mono tabular-nums">
                   <div className="flex justify-between">
-                    <span className="text-orange-300">🌡️ {temperature.toFixed(0)}K</span>
-                    <span className="text-purple-300">⭕ {radius.toFixed(1)}R⊕</span>
+                    <span className="text-ink-secondary">🌡️ {temperature.toFixed(0)}K</span>
+                    <span className="text-stellar-300">⭕ {radius.toFixed(1)}R⊕</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-cyan-300">🔄 {orbitalPeriod.toFixed(0)}d</span>
-                    <span className="text-indigo-300">📏 {distance.toFixed(2)}AU</span>
+                    <span className="text-stellar-300">🔄 {orbitalPeriod.toFixed(0)}d</span>
+                    <span className="text-ink-secondary">📏 {distance.toFixed(2)}AU</span>
                   </div>
                 </div>
 
                 {/* Host star - single line */}
                 {(planetData?.koi_steff || planetData?.st_teff) && (
-                  <div className="mt-1 pt-1 border-t border-purple-500/20 text-[8px] text-amber-200">
+                  <div className="mt-1 pt-1 border-t border-stellar-400/15 text-[8px] font-mono text-ink-tertiary">
                     ⭐ {(planetData.koi_steff || planetData.st_teff)?.toFixed(0)}K
                   </div>
                 )}
 
                 {/* Habitability badge - tiny */}
                 {temperature >= 273 && temperature <= 373 && (
-                  <div className="mt-1 text-[8px] text-green-300">✓ Habitable</div>
+                  <div className="mt-1 text-[8px] text-stellar-300">✓ Habitable</div>
                 )}
               </div>
             </div>
@@ -938,7 +938,7 @@ function Scene({ data, dataType, multipleData, onPlanetClick }: VisualizationPro
             {/* Star system label for multi-star systems */}
             {isMultiStar && (
               <Html position={[0, system.starRadius + 2, 0]} center>
-                <div className="bg-gray-900/90 dark:bg-gray-900/90 text-white px-2 py-1 rounded text-[10px] whitespace-nowrap border border-indigo-500/50 pointer-events-none backdrop-blur-sm">
+                <div className="bg-void-900/90 text-ink px-2 py-1 rounded text-[10px] font-mono tabular-nums whitespace-nowrap border border-stellar-400/25 pointer-events-none backdrop-blur-md">
                   Star {systemIndex + 1} • {system.starTemp}K
                 </div>
               </Html>
@@ -1204,16 +1204,16 @@ function InfoPanel({ data, dataType }: VisualizationProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl p-5 border-2 border-gray-300 dark:border-slate-700 shadow-xl">
+    <div className="glass rounded-panel p-5">
       {/* Toggle Switch - Centered at top */}
       <div className="flex justify-center mb-4">
-        <div className="relative inline-flex bg-gray-200 dark:bg-slate-700 rounded-full p-1 gap-0 shadow-inner">
+        <div className="relative inline-flex bg-surface-sunken border border-hairline rounded-pill p-1 gap-0">
           {/* Sliding background indicator - positioned absolutely behind buttons */}
           <div
-            className={`absolute top-1 bottom-1 left-1 rounded-full transition-all duration-300 ease-in-out shadow-lg ${
-              viewMode === 'kids' 
-                ? 'bg-blue-500 dark:bg-blue-600 w-[88px]' 
-                : 'bg-purple-500 dark:bg-purple-600 w-[126px] translate-x-[88px]'
+            className={`absolute top-1 bottom-1 left-1 rounded-pill transition-all duration-300 ease-in-out ${
+              viewMode === 'kids'
+                ? 'bg-stellar-400/20 border border-stellar-400/40 w-[88px]'
+                : 'bg-nebula-500/25 border border-nebula-400/40 w-[126px] translate-x-[88px]'
             }`}
           />
           
@@ -1224,8 +1224,8 @@ function InfoPanel({ data, dataType }: VisualizationProps) {
           >
             <span className={`transition-colors duration-200 ${
               viewMode === 'kids'
-                ? 'text-white'
-                : 'text-gray-700 dark:text-gray-300'
+                ? 'text-ink font-medium'
+                : 'text-ink-tertiary'
             }`}>
               👶 Kids
             </span>
@@ -1236,8 +1236,8 @@ function InfoPanel({ data, dataType }: VisualizationProps) {
           >
             <span className={`transition-colors duration-200 ${
               viewMode === 'researchers'
-                ? 'text-white'
-                : 'text-gray-700 dark:text-gray-300'
+                ? 'text-ink font-medium'
+                : 'text-ink-tertiary'
             }`}>
               👨‍🔬 Researcher
             </span>
@@ -1246,67 +1246,67 @@ function InfoPanel({ data, dataType }: VisualizationProps) {
       </div>
 
       {/* Planet Name - Centered with text overflow handling */}
-      <div className="text-center mb-2">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate px-2">{info.name}</h3>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{info.id}</p>
+      <div className="text-center mb-3">
+        <h3 className="font-display text-xl font-semibold text-ink truncate px-2">{info.name}</h3>
+        <p className="font-mono text-xs text-ink-tertiary mt-1">{info.id}</p>
       </div>
 
       {/* Kids Mode */}
       {viewMode === 'kids' && (
         <div className="space-y-3">
-          <div className="bg-blue-50 dark:bg-blue-950/40 rounded-lg p-4 border border-blue-100 dark:border-blue-900/50">
-            <p className="text-sm font-bold text-blue-900 dark:text-blue-300 mb-3">🌟 Meet this Planet!</p>
-            
-            <div className="space-y-3 text-sm text-gray-700 dark:text-gray-200">
+          <div className="bg-stellar-400/8 rounded-card p-4 border border-stellar-400/20">
+            <p className="text-sm font-semibold text-stellar-300 mb-3">🌟 Meet this Planet!</p>
+
+            <div className="space-y-3 text-sm text-ink-secondary">
               <div>
-                <span className="font-semibold text-gray-800 dark:text-gray-100">How Big? </span>
+                <span className="font-medium text-ink">How Big? </span>
                 <p className="mt-1">{getKidFriendlySize(isKepler ? data.koi_prad : data.pl_rade)}</p>
               </div>
-              
+
               <div>
-                <span className="font-semibold text-gray-800 dark:text-gray-100">How Hot or Cold? </span>
+                <span className="font-medium text-ink">How Hot or Cold? </span>
                 <p className="mt-1">{getKidFriendlyTemp(temp)}</p>
               </div>
-              
+
               <div>
-                <span className="font-semibold text-gray-800 dark:text-gray-100">How Long is a Year? </span>
+                <span className="font-medium text-ink">How Long is a Year? </span>
                 <p className="mt-1">{getKidFriendlyPeriod(isKepler ? data.koi_period : data.pl_orbper)}</p>
               </div>
-              
+
               <div>
-                <span className="font-semibold text-gray-800 dark:text-gray-100">How Far from its Star? </span>
+                <span className="font-medium text-ink">How Far from its Star? </span>
                 <p className="mt-1">{getKidFriendlyDistance(isKepler ? data.koi_sma : (data.pl_orbper ? Math.pow(data.pl_orbper / 365.25, 2/3) : undefined))}</p>
               </div>
 
               {!isKepler && (data.sy_dist || data.st_dist) && (
                 <div>
-                  <span className="font-semibold text-gray-800 dark:text-gray-100">How Far from Earth? 🌍</span>
+                  <span className="font-medium text-ink">How Far from Earth? 🌍</span>
                   <p className="mt-1">{getKidFriendlyDistanceFromEarth(data.sy_dist || data.st_dist || 0)}</p>
                 </div>
               )}
             </div>
           </div>
 
-          <div className={`rounded-lg p-4 border ${
+          <div className={`rounded-card p-4 border ${
             habitability === 'Potentially Habitable'
-              ? 'bg-green-50 dark:bg-green-950/40 border-green-100 dark:border-green-900/50'
-              : 'bg-gray-50 dark:bg-slate-800/50 border-gray-100 dark:border-slate-700'
+              ? 'bg-stellar-400/8 border-stellar-400/25'
+              : 'bg-surface border-hairline'
           }`}>
-            <p className={`text-sm font-bold mb-1 ${
-              habitability === 'Potentially Habitable' 
-                ? 'text-green-900 dark:text-green-300' 
-                : 'text-gray-900 dark:text-gray-200'
+            <p className={`text-sm font-semibold mb-1 ${
+              habitability === 'Potentially Habitable'
+                ? 'text-stellar-200'
+                : 'text-ink'
             }`}>
               {habitability === 'Potentially Habitable' ? '🌱 Could Life Exist Here?' : '❄️🔥 Too Hot or Cold for Life'}
             </p>
-            <p className="text-xs text-gray-600 dark:text-gray-300">
-              {habitability === 'Potentially Habitable' 
+            <p className="text-xs text-ink-secondary">
+              {habitability === 'Potentially Habitable'
                 ? 'This planet might be just the right temperature for liquid water - like Earth!'
                 : 'This planet is probably too hot or too cold for life as we know it.'}
             </p>
           </div>
 
-          <div className="text-xs text-gray-500 dark:text-gray-400 italic bg-gray-50 dark:bg-slate-800/30 rounded p-2 border border-gray-200 dark:border-slate-700/50">
+          <div className="text-xs text-ink-tertiary italic bg-surface rounded-control p-2 border border-hairline">
             <p>💡 Fun Fact: You can use your mouse to spin and zoom around the solar system!</p>
           </div>
         </div>
@@ -1315,68 +1315,68 @@ function InfoPanel({ data, dataType }: VisualizationProps) {
       {/* Researcher Mode */}
       {viewMode === 'researchers' && (
         <div className="space-y-3">
-          <div className="bg-purple-50 dark:bg-purple-950/40 rounded-lg p-4 border border-purple-100 dark:border-purple-900/50">
-            <p className="text-sm font-bold text-purple-900 dark:text-purple-300 mb-3">📊 Scientific Data</p>
-            
+          <div className="bg-nebula-500/8 rounded-card p-4 border border-nebula-400/20">
+            <p className="text-sm font-semibold text-nebula-300 mb-3">📊 Scientific Data</p>
+
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <span className="text-gray-600 dark:text-gray-300 text-xs">Radius:</span>
-                <p className="font-semibold text-gray-900 dark:text-white mt-0.5">{info.radius}</p>
+                <span className="text-ink-tertiary text-xs">Radius:</span>
+                <p className="font-mono text-ink mt-0.5 tabular-nums">{info.radius}</p>
               </div>
               <div>
-                <span className="text-gray-600 dark:text-gray-300 text-xs">Temperature:</span>
-                <p className="font-semibold text-gray-900 dark:text-white mt-0.5">{info.temperature}</p>
+                <span className="text-ink-tertiary text-xs">Temperature:</span>
+                <p className="font-mono text-ink mt-0.5 tabular-nums">{info.temperature}</p>
               </div>
               <div>
-                <span className="text-gray-600 dark:text-gray-300 text-xs">Orbital Period:</span>
-                <p className="font-semibold text-gray-900 dark:text-white mt-0.5">{info.period}</p>
+                <span className="text-ink-tertiary text-xs">Orbital Period:</span>
+                <p className="font-mono text-ink mt-0.5 tabular-nums">{info.period}</p>
               </div>
               <div>
-                <span className="text-gray-600 dark:text-gray-300 text-xs">Semi-major Axis:</span>
-                <p className="font-semibold text-gray-900 dark:text-white mt-0.5">{info.distance}</p>
+                <span className="text-ink-tertiary text-xs">Semi-major Axis:</span>
+                <p className="font-mono text-ink mt-0.5 tabular-nums">{info.distance}</p>
               </div>
               {isKepler ? (
                 <>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-300 text-xs">Insolation Flux:</span>
-                    <p className="font-semibold text-gray-900 dark:text-white mt-0.5">{info.insolation}</p>
+                    <span className="text-ink-tertiary text-xs">Insolation Flux:</span>
+                    <p className="font-mono text-ink mt-0.5 tabular-nums">{info.insolation}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-300 text-xs">Disposition:</span>
-                    <p className="font-semibold text-gray-900 dark:text-white mt-0.5">{info.disposition}</p>
+                    <span className="text-ink-tertiary text-xs">Disposition:</span>
+                    <p className="font-mono text-ink mt-0.5">{info.disposition}</p>
                   </div>
                 </>
               ) : (
                 <>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-300 text-xs">System Distance:</span>
-                    <p className="font-semibold text-gray-900 dark:text-white mt-0.5">{info.systemDistance}</p>
+                    <span className="text-ink-tertiary text-xs">System Distance:</span>
+                    <p className="font-mono text-ink mt-0.5 tabular-nums">{info.systemDistance}</p>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-300 text-xs">Stellar T<sub>eff</sub>:</span>
-                    <p className="font-semibold text-gray-900 dark:text-white mt-0.5">{info.starTemp}</p>
+                    <span className="text-ink-tertiary text-xs">Stellar T<sub>eff</sub>:</span>
+                    <p className="font-mono text-ink mt-0.5 tabular-nums">{info.starTemp}</p>
                   </div>
                 </>
               )}
             </div>
           </div>
 
-          <div className="pt-3 border-t-2 border-gray-200 dark:border-slate-700">
-            <div className={`inline-block px-3 py-1.5 rounded-full text-xs font-medium shadow-sm ${
+          <div className="pt-3 border-t border-hairline">
+            <div className={`inline-block px-3 py-1.5 rounded-pill text-xs font-medium border ${
               habitability === 'Potentially Habitable'
-                ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 border border-green-200 dark:border-green-800'
-                : 'bg-gray-100 text-gray-800 dark:bg-slate-700 dark:text-gray-200 border border-gray-200 dark:border-slate-600'
+                ? 'bg-stellar-400/12 text-stellar-300 border-stellar-400/25'
+                : 'bg-void-600/50 text-ink-tertiary border-hairline'
             }`}>
               {habitability}
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
+            <p className="text-xs text-ink-secondary mt-2 leading-relaxed">
               {habitability === 'Potentially Habitable'
                 ? 'Equilibrium temperature falls within conservative habitable zone (200-350 K)'
                 : 'Equilibrium temperature outside conservative habitable zone parameters'}
             </p>
           </div>
 
-          <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-slate-800/30 rounded p-2 border border-gray-200 dark:border-slate-700/50">
+          <div className="text-xs text-ink-tertiary bg-surface rounded-control p-2 border border-hairline">
             <p>💡 Use mouse controls: rotate, zoom, and pan to explore orbital mechanics</p>
           </div>
         </div>
@@ -1439,17 +1439,17 @@ export default function ExoplanetVisualization3D({ data, dataType, multipleData,
   const cameraPosition = calculateCameraPosition();
 
   return (
-    <div ref={containerRef} className={`${isFullscreen ? 'fixed inset-0 z-50 bg-gray-900' : 'grid grid-cols-1 lg:grid-cols-3 gap-6'}`}>
+    <div ref={containerRef} className={`${isFullscreen ? 'fixed inset-0 z-50 bg-void-950' : 'grid grid-cols-1 lg:grid-cols-3 gap-6'}`}>
       {/* 3D Canvas */}
       <div className={isFullscreen ? 'w-full h-full' : 'lg:col-span-2'}>
-        <div className={`bg-gray-900 dark:bg-gray-900 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-700 relative ${isFullscreen ? 'h-full rounded-none border-0' : 'h-[500px]'}`}>
+        <div className={`bg-void-950 rounded-card overflow-hidden border border-hairline relative ${isFullscreen ? 'h-full rounded-none border-0' : 'h-[500px]'}`}>
           {/* Control Buttons */}
           <div className="absolute top-4 right-4 z-10 flex gap-2">
             {/* Toggle Tooltip Button - Only in fullscreen */}
             {isFullscreen && (
               <button
                 onClick={() => setShowTooltip(!showTooltip)}
-                className="bg-gray-800/80 hover:bg-gray-700/90 text-white p-2 rounded-lg backdrop-blur-sm transition-all duration-200 border border-gray-600/50 hover:border-indigo-500/50"
+                className="bg-void-800/80 hover:bg-void-700/90 text-ink p-2 rounded-control backdrop-blur-md transition-colors duration-200 border border-hairline hover:border-stellar-400/40"
                 title={showTooltip ? 'Hide Info Panel' : 'Show Info Panel'}
               >
                 {showTooltip ? (
@@ -1468,7 +1468,7 @@ export default function ExoplanetVisualization3D({ data, dataType, multipleData,
             {/* Fullscreen Toggle Button */}
             <button
               onClick={toggleFullscreen}
-              className="bg-gray-800/80 hover:bg-gray-700/90 text-white p-2 rounded-lg backdrop-blur-sm transition-all duration-200 border border-gray-600/50 hover:border-indigo-500/50"
+              className="bg-void-800/80 hover:bg-void-700/90 text-ink p-2 rounded-control backdrop-blur-md transition-colors duration-200 border border-hairline hover:border-stellar-400/40"
               title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
             >
               {isFullscreen ? (
@@ -1493,34 +1493,34 @@ export default function ExoplanetVisualization3D({ data, dataType, multipleData,
           </Canvas>
         </div>
         {isMultiple && !isFullscreen && (
-          <div className="mt-2 space-y-2">
-            <div className="text-sm text-gray-700 dark:text-gray-400 text-center bg-gray-100 dark:bg-gray-800 rounded-lg p-3 border border-gray-300 dark:border-gray-700">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="mt-3 space-y-2">
+            <div className="text-sm text-ink-secondary text-center glass rounded-card p-3">
+              <div className="flex items-center justify-center gap-2">
+                <svg className="w-5 h-5 text-stellar-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
                 </svg>
-                <span className="font-semibold">💡 Click on any planet to view its details • Showing {multipleData.length} exoplanets</span>
+                <span>Click on any planet to view its details • Showing <span className="font-mono text-ink tabular-nums">{multipleData.length}</span> exoplanets</span>
               </div>
             </div>
             {/* Color legend */}
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 border border-gray-300 dark:border-gray-700">
-              <div className="text-xs text-gray-800 dark:text-gray-300 font-semibold mb-2 text-center">Orbit Color Legend</div>
+            <div className="glass rounded-card p-3">
+              <div className="text-eyebrow uppercase text-ink-tertiary mb-2 text-center">Orbit Color Legend</div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-1 rounded bg-[#5ab85a]"></div>
-                  <span className="text-gray-600 dark:text-gray-400">Habitable Zone</span>
+                  <span className="text-ink-tertiary">Habitable Zone</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-1 rounded bg-[#ff6b4a]"></div>
-                  <span className="text-gray-600 dark:text-gray-400">Hot Planet</span>
+                  <span className="text-ink-tertiary">Hot Planet</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-1 rounded bg-[#87ceeb]"></div>
-                  <span className="text-gray-600 dark:text-gray-400">Cold/Ice</span>
+                  <span className="text-ink-tertiary">Cold/Ice</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-1 rounded bg-[#667eea]"></div>
-                  <span className="text-gray-600 dark:text-gray-400">Other</span>
+                  <div className="w-8 h-1 rounded bg-[#8b5cf6]"></div>
+                  <span className="text-ink-tertiary">Other</span>
                 </div>
               </div>
             </div>
@@ -1541,33 +1541,33 @@ export default function ExoplanetVisualization3D({ data, dataType, multipleData,
       {/* Fullscreen Legend */}
       {isFullscreen && isMultiple && (
         <div className="fixed bottom-4 left-4 z-20 max-w-md">
-          <div className="bg-gray-800/90 backdrop-blur-md rounded-lg p-3 border border-gray-600/50">
-            <div className="text-xs text-gray-200 font-semibold mb-2">Orbit Color Legend</div>
+          <div className="bg-void-800/90 backdrop-blur-md rounded-card p-3 border border-hairline">
+            <div className="text-eyebrow uppercase text-ink-tertiary mb-2">Orbit Color Legend</div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-1 rounded bg-[#5ab85a]"></div>
-                <span className="text-gray-300">Habitable</span>
+                <span className="text-ink-secondary">Habitable</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-6 h-1 rounded bg-[#ff6b4a]"></div>
-                <span className="text-gray-300">Hot</span>
+                <span className="text-ink-secondary">Hot</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-6 h-1 rounded bg-[#87ceeb]"></div>
-                <span className="text-gray-300">Cold</span>
+                <span className="text-ink-secondary">Cold</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-1 rounded bg-[#667eea]"></div>
-                <span className="text-gray-300">Other</span>
+                <div className="w-6 h-1 rounded bg-[#8b5cf6]"></div>
+                <span className="text-ink-secondary">Other</span>
               </div>
             </div>
           </div>
-          <div className="mt-2 bg-gray-800/90 backdrop-blur-md rounded-lg p-3 border border-gray-600/50">
-            <div className="text-xs text-gray-200 flex items-center gap-2">
-              <svg className="w-4 h-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="mt-2 bg-void-800/90 backdrop-blur-md rounded-card p-3 border border-hairline">
+            <div className="text-xs text-ink-secondary flex items-center gap-2">
+              <svg className="w-4 h-4 text-stellar-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
               </svg>
-              <span>Showing {multipleData.length} exoplanets • Click planets for details</span>
+              <span>Showing <span className="font-mono text-ink tabular-nums">{multipleData.length}</span> exoplanets • Click planets for details</span>
             </div>
           </div>
         </div>

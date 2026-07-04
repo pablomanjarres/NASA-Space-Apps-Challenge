@@ -8,6 +8,7 @@
 
 import { getSupabasePublicUrl } from '../config/supabase';
 import { indexedDBCache } from './indexedDBCache';
+import { isDemoMode, demoDatasetMetadata, demoDatasetRows } from '../lib/demoFixtures';
 
 export interface DatasetMetadata {
   total_rows: number;
@@ -81,6 +82,13 @@ class DataLoader {
 
       return metadata;
     } catch (error) {
+      // DEMO fallback: serve bundled sample metadata so browsing never blanks.
+      if (isDemoMode()) {
+        console.warn(`⚠️ Metadata fetch failed for ${datasetType}; using bundled demo sample.`);
+        const meta = demoDatasetMetadata(datasetType);
+        this.metadataCache.set(cacheKey, meta);
+        return meta;
+      }
       console.error(`Failed to load metadata for ${datasetType}:`, error);
       throw error;
     }
@@ -127,6 +135,13 @@ class DataLoader {
 
         return chunk;
       } catch (error) {
+        // DEMO fallback: serve bundled sample rows so the table / 3D still render.
+        if (isDemoMode()) {
+          console.warn(`⚠️ Chunk ${chunkNumber} fetch failed for ${datasetType}; using bundled demo sample.`);
+          const rows = demoDatasetRows(datasetType);
+          this.memoryCache.set(cacheKey, rows);
+          return rows;
+        }
         console.error(`Failed to load chunk ${chunkNumber} for ${datasetType}:`, error);
         throw error;
       } finally {

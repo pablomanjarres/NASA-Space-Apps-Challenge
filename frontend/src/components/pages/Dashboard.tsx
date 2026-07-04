@@ -142,13 +142,15 @@ interface HyperparamSliderProps {
   isFloat?: boolean;
 }
 
-const HyperparamSlider: React.FC<HyperparamSliderProps> = ({ id, label, value, min, max, step, onChange, isFloat = false }) => (
-  <div className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border border-gray-200 dark:border-gray-600">
-    <div className="flex justify-between mb-2">
-      <label htmlFor={id} className="block text-sm font-semibold text-gray-800 dark:text-gray-200">
+const HyperparamSlider: React.FC<HyperparamSliderProps> = ({ id, label, value, min, max, step, onChange, isFloat = false }) => {
+  const pct = ((parseFloat(value.toString()) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))) * 100;
+  return (
+  <div className="rounded-card border border-hairline bg-surface-raised p-4">
+    <div className="mb-2 flex justify-between">
+      <label htmlFor={id} className="block text-sm font-medium text-ink-secondary">
         {label}
       </label>
-      <span className="text-sm font-bold text-purple-600 dark:text-purple-400">{value}</span>
+      <span className="font-mono text-sm font-semibold text-accent">{value}</span>
     </div>
     <input
       id={id}
@@ -158,17 +160,20 @@ const HyperparamSlider: React.FC<HyperparamSliderProps> = ({ id, label, value, m
       step={step}
       value={value}
       onChange={(e) => onChange(isFloat ? parseFloat(e.target.value) : parseInt(e.target.value))}
-      className="mt-2 w-full h-3 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer slider-thumb accent-purple-600"
+      className="mt-2 w-full cursor-pointer appearance-none accent-stellar-400"
       style={{
-        background: `linear-gradient(to right, rgb(147 51 234) 0%, rgb(147 51 234) ${((parseFloat(value.toString()) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))) * 100}%, rgb(209 213 219) ${((parseFloat(value.toString()) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))) * 100}%, rgb(209 213 219) 100%)`
+        background: `linear-gradient(to right, #22d3ee 0%, #22d3ee ${pct}%, rgba(150,172,255,0.12) ${pct}%, rgba(150,172,255,0.12) 100%)`,
+        height: '8px',
+        borderRadius: '999px',
       }}
     />
-    <div className="flex justify-between mt-2 text-xs font-medium text-gray-500 dark:text-gray-400">
+    <div className="mt-2 flex justify-between font-mono text-xs text-ink-tertiary">
       <span>{min}</span>
       <span>{max}</span>
     </div>
   </div>
-);
+  );
+};
 
 // Model Metric Interface
 interface ModelMetric {
@@ -189,16 +194,16 @@ const RequiredColumns: React.FC<RequiredColumnsProps> = ({ columns, modelName, c
   const displayColumns = showAll ? columns : columns.slice(0, 10);
 
   return (
-    <div className="mt-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-800/30 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
-      <div className="flex justify-between items-center mb-3">
-        <div className="font-semibold text-gray-800 dark:text-gray-200 text-sm">
-          <i className="fas fa-check-circle text-indigo-600 dark:text-indigo-400 mr-2"></i>
-          Required Columns for {modelName} Model ({columns.length} total)
+    <div className="mt-4 rounded-card border border-hairline bg-surface-raised p-4">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="text-sm font-medium text-ink-secondary">
+          <i className="fas fa-check-circle mr-2 text-accent"></i>
+          Required Columns for {modelName} Model (<span className="font-mono text-ink">{columns.length}</span> total)
         </div>
         {columns.length > 10 && (
           <button
             onClick={() => setShowAll(!showAll)}
-            className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-lg text-xs transition-colors font-medium"
+            className="btn-space btn-secondary flex-shrink-0 px-3 py-1.5 text-xs"
           >
             {showAll ? 'Show Less' : 'Show All'}
           </button>
@@ -207,26 +212,22 @@ const RequiredColumns: React.FC<RequiredColumnsProps> = ({ columns, modelName, c
       <div className="flex flex-wrap gap-2">
         {displayColumns.map((col) => (
           <div key={col} className="group relative">
-            <span className="px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-200 text-xs rounded-lg font-medium border border-indigo-200 dark:border-indigo-800 cursor-help">
+            <span className="cursor-help rounded-control border border-hairline bg-surface px-2.5 py-1 font-mono text-xs text-ink-secondary transition-colors group-hover:border-stellar-400/40 group-hover:text-accent">
               {col}
             </span>
             {/* Tooltip */}
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-50 w-64">
-              <div className="bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg p-3 shadow-xl border border-gray-700 dark:border-gray-600">
-                <div className="font-semibold mb-1 text-indigo-300">{col}</div>
-                <div className="text-gray-200 dark:text-gray-300">
+            <div className="absolute bottom-full left-1/2 z-50 mb-2 hidden w-64 -translate-x-1/2 transform group-hover:block">
+              <div className="rounded-card border border-hairline-strong bg-void-800 p-3 text-xs shadow-elevated">
+                <div className="mb-1 font-mono font-semibold text-accent">{col}</div>
+                <div className="text-ink-secondary">
                   {columnDescriptions[col] || 'No description available'}
-                </div>
-                {/* Arrow */}
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
-                  <div className="border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
                 </div>
               </div>
             </div>
           </div>
         ))}
         {!showAll && columns.length > 10 && (
-          <span className="px-2.5 py-1 text-gray-500 dark:text-gray-400 text-xs font-medium">
+          <span className="px-2.5 py-1 font-mono text-xs text-ink-tertiary">
             +{columns.length - 10} more
           </span>
         )}
@@ -247,28 +248,24 @@ const ModelMetricsDisplay: React.FC<ModelMetricsDisplayProps> = ({ metrics, mode
       name: 'Accuracy',
       value: metrics.ensembleAccuracy,
       icon: 'fa-bullseye',
-      color: 'from-purple-500 to-pink-600',
       description: 'Overall prediction correctness'
     },
     {
       name: 'Precision',
       value: metrics.ensemblePrecision,
       icon: 'fa-crosshairs',
-      color: 'from-blue-500 to-cyan-600',
       description: 'Positive prediction accuracy'
     },
     {
       name: 'Recall',
       value: metrics.ensembleRecall,
       icon: 'fa-search-plus',
-      color: 'from-green-500 to-emerald-600',
       description: 'Actual positives found'
     },
     {
       name: 'F1-Score',
       value: metrics.ensembleF1Score,
       icon: 'fa-balance-scale',
-      color: 'from-orange-500 to-red-600',
       description: 'Balanced performance measure'
     }
   ];
@@ -277,34 +274,34 @@ const ModelMetricsDisplay: React.FC<ModelMetricsDisplayProps> = ({ metrics, mode
     <div className="space-y-6">
       {/* Ensemble Performance - Main Metrics */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <i className="fas fa-trophy text-yellow-500 text-lg"></i>
-          <h4 className="font-bold text-gray-900 dark:text-white">Ensemble Performance</h4>
-          <span className="text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 px-2 py-1 rounded-full font-semibold">Best Results</span>
+        <div className="mb-4 flex items-center gap-2">
+          <i className="fas fa-trophy text-lg text-accent"></i>
+          <h4 className="font-display font-semibold text-ink">Ensemble Performance</h4>
+          <span className="rounded-pill border border-hairline bg-surface px-2 py-0.5 text-eyebrow text-ink-tertiary">Best Results</span>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {ensembleMetrics.map((metric) => (
             <div
               key={metric.name}
-              className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:scale-105 group"
+              className="rounded-card border border-hairline bg-surface-raised p-4 card-hover"
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className={`w-10 h-10 bg-gradient-to-br ${metric.color} rounded-lg flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
-                  <i className={`fas ${metric.icon} text-white text-sm`}></i>
+              <div className="mb-3 flex items-start justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-control border border-hairline bg-surface text-accent">
+                  <i className={`fas ${metric.icon} text-sm`}></i>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className="font-mono text-2xl font-semibold text-ink">
                     {(metric.value * 100).toFixed(2)}%
                   </div>
                 </div>
               </div>
               <div className="space-y-1">
-                <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">{metric.name}</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">{metric.description}</div>
+                <div className="text-sm font-medium text-ink-secondary">{metric.name}</div>
+                <div className="text-xs text-ink-tertiary">{metric.description}</div>
                 {/* Progress bar */}
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
+                <div className="mt-2 h-2 w-full overflow-hidden rounded-pill bg-surface-sunken">
                   <div
-                    className={`h-2 bg-gradient-to-r ${metric.color} rounded-full transition-all duration-1000 ease-out`}
+                    className="h-2 rounded-pill bg-stellar-400 transition-all duration-1000 ease-out"
                     style={{ width: `${metric.value * 100}%` }}
                   ></div>
                 </div>
@@ -316,47 +313,47 @@ const ModelMetricsDisplay: React.FC<ModelMetricsDisplayProps> = ({ metrics, mode
 
       {/* Individual Models Performance */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <i className="fas fa-layer-group text-indigo-500 text-lg"></i>
-          <h4 className="font-bold text-gray-900 dark:text-white">Individual Model Performance</h4>
+        <div className="mb-4 flex items-center gap-2">
+          <i className="fas fa-layer-group text-lg text-nebula-300"></i>
+          <h4 className="font-display font-semibold text-ink">Individual Model Performance</h4>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           {metrics.individualModels.map((model) => (
             <div
               key={model.name}
-              className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-800/50 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300 hover:scale-102"
+              className="rounded-card border border-hairline bg-surface-raised p-5 card-hover"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`w-12 h-12 bg-gradient-to-br ${model.color} rounded-lg flex items-center justify-center shadow-md`}>
-                  <i className={`fas ${model.icon} text-white text-lg`}></i>
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-control border border-hairline bg-surface text-accent">
+                  <i className={`fas ${model.icon} text-lg`}></i>
                 </div>
                 <div>
-                  <h5 className="font-bold text-gray-900 dark:text-white text-lg">{model.name}</h5>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Gradient Boosting</p>
+                  <h5 className="font-display text-lg font-semibold text-ink">{model.name}</h5>
+                  <p className="text-xs text-ink-tertiary">Gradient Boosting</p>
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Accuracy</span>
-                  <span className="text-sm font-bold text-gray-900 dark:text-white">{(model.accuracy * 100).toFixed(2)}%</span>
+                  <span className="text-xs font-medium text-ink-tertiary">Accuracy</span>
+                  <span className="font-mono text-sm font-semibold text-ink">{(model.accuracy * 100).toFixed(2)}%</span>
                 </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                  <div className={`h-1.5 bg-gradient-to-r ${model.color} rounded-full transition-all duration-1000`} style={{ width: `${model.accuracy * 100}%` }}></div>
+                <div className="h-1.5 w-full overflow-hidden rounded-pill bg-surface-sunken">
+                  <div className="h-1.5 rounded-pill bg-stellar-400 transition-all duration-1000" style={{ width: `${model.accuracy * 100}%` }}></div>
                 </div>
-                
+
                 <div className="grid grid-cols-3 gap-2 pt-2">
                   <div className="text-center">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Precision</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{(model.precision * 100).toFixed(1)}%</p>
+                    <p className="text-xs text-ink-tertiary">Precision</p>
+                    <p className="font-mono text-sm font-semibold text-ink">{(model.precision * 100).toFixed(1)}%</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Recall</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{(model.recall * 100).toFixed(1)}%</p>
+                    <p className="text-xs text-ink-tertiary">Recall</p>
+                    <p className="font-mono text-sm font-semibold text-ink">{(model.recall * 100).toFixed(1)}%</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">F1</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{(model.f1Score * 100).toFixed(1)}%</p>
+                    <p className="text-xs text-ink-tertiary">F1</p>
+                    <p className="font-mono text-sm font-semibold text-ink">{(model.f1Score * 100).toFixed(1)}%</p>
                   </div>
                 </div>
               </div>
@@ -366,15 +363,15 @@ const ModelMetricsDisplay: React.FC<ModelMetricsDisplayProps> = ({ metrics, mode
       </div>
 
       {/* Comparison Info */}
-      <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-800/30 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+      <div className="rounded-card border border-hairline bg-surface-raised p-4">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-            <i className="fas fa-lightbulb text-white text-sm"></i>
+          <div className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-control border border-hairline bg-surface text-nebula-300">
+            <i className="fas fa-lightbulb text-sm"></i>
           </div>
-          <div className="text-sm text-gray-700 dark:text-gray-300">
-            <p className="font-semibold mb-1">Why Ensemble?</p>
-            <p className="text-xs leading-relaxed">
-              The ensemble model combines predictions from all three algorithms using weighted voting (40% CatBoost, 35% XGBoost, 25% LightGBM). 
+          <div className="text-sm text-ink-secondary">
+            <p className="mb-1 font-medium text-ink">Why Ensemble?</p>
+            <p className="text-xs leading-relaxed text-ink-tertiary">
+              The ensemble model combines predictions from all three algorithms using weighted voting (40% CatBoost, 35% XGBoost, 25% LightGBM).
               This approach leverages the strengths of each model to achieve higher accuracy and more reliable predictions than any single model alone.
             </p>
           </div>
@@ -1047,44 +1044,45 @@ const Dashboard: React.FC = () => {
         <div className="space-y-6">
           {/* Model Selection */}
           <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <label className="text-gray-700 dark:text-gray-300 font-semibold text-sm uppercase tracking-wide">
-                <i className="fas fa-satellite mr-2"></i>Select Model
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <label className="text-eyebrow text-ink-tertiary">
+                <i className="fas fa-satellite mr-2 text-accent"></i>Select Model
               </label>
               <button
                 onClick={() => setShowHyperparamsModal(true)}
-                className="px-4 py-2 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-purple-500/20 border border-purple-500/30 text-purple-700 dark:text-purple-300 rounded-xl hover:from-purple-500/30 hover:via-pink-500/30 hover:to-purple-500/30 transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm"
+                className="btn-space btn-secondary text-sm"
               >
                 <i className="fas fa-sliders-h"></i>
                 Adjust Hyperparameters
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+            <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
               {[
-                { id: 'tess' as MLModel, label: 'TESS Model', desc: 'FP, PC, KP, APC, FA, CP', icon: 'fa-rocket', color: 'from-red-500 to-orange-500', count: modelColumns.tess.length },
-                { id: 'kepler' as MLModel, label: 'Kepler Model', desc: 'FP, confirmed, candidate', icon: 'fa-satellite', color: 'from-blue-500 to-cyan-500', count: modelColumns.kepler.length }
+                { id: 'tess' as MLModel, label: 'TESS Model', desc: 'FP, PC, KP, APC, FA, CP', icon: 'fa-rocket', count: modelColumns.tess.length },
+                { id: 'kepler' as MLModel, label: 'Kepler Model', desc: 'FP, confirmed, candidate', icon: 'fa-satellite', count: modelColumns.kepler.length }
               ].map((model) => (
                 <button
                   key={model.id}
                   onClick={() => handleModelChange(model.id)}
-                  className={`group relative p-5 rounded-2xl border-2 transition-all duration-300 text-left overflow-hidden ${
+                  className={`group relative overflow-hidden rounded-card border p-5 text-left transition-colors duration-300 ${
                     selectedModel === model.id
-                      ? 'border-purple-500 bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-purple-500/5 dark:from-purple-500/20 dark:via-pink-500/20 dark:to-purple-500/10 shadow-2xl scale-105'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500 bg-white/30 dark:bg-gray-800/30 hover:scale-102'
+                      ? 'border-stellar-400/50 bg-stellar-400/[0.06] shadow-glow-stellar'
+                      : 'border-hairline bg-surface-raised hover:border-hairline-strong'
                   }`}
                 >
-                  {selectedModel === model.id && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400/5 via-purple-400/5 to-pink-400/5 animate-pulse"></div>
-                  )}
                   <div className="relative z-10">
-                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${model.color} flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                      <i className={`fas ${model.icon} text-white text-2xl`}></i>
+                    <div className={`mb-3 flex h-14 w-14 items-center justify-center rounded-control border transition-colors ${
+                      selectedModel === model.id
+                        ? 'border-stellar-400/40 bg-stellar-400/10 text-accent'
+                        : 'border-hairline bg-surface text-ink-secondary group-hover:text-accent'
+                    }`}>
+                      <i className={`fas ${model.icon} text-2xl`}></i>
                     </div>
-                    <h3 className="font-bold text-gray-800 dark:text-white text-base mb-1">{model.label}</h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">{model.desc}</p>
+                    <h3 className="mb-1 font-display text-base font-semibold text-ink">{model.label}</h3>
+                    <p className="mb-2 text-xs text-ink-tertiary">{model.desc}</p>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full font-medium">
+                      <span className="rounded-pill border border-hairline bg-surface px-2 py-1 font-mono text-xs text-ink-secondary">
                         {model.count} features
                       </span>
                     </div>
@@ -1103,19 +1101,19 @@ const Dashboard: React.FC = () => {
 
           {/* Model Performance Metrics Section */}
           <div className="space-y-4" key={`metrics-${selectedModel}`}>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-300 dark:via-purple-700 to-transparent"></div>
-              <h3 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                <i className="fas fa-chart-line text-purple-600 dark:text-purple-400"></i>
+            <div className="mb-2 flex items-center gap-3">
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-stellar-400/25 to-transparent"></div>
+              <h3 className="flex items-center gap-2 font-display text-lg font-semibold text-ink">
+                <i className="fas fa-chart-line text-accent"></i>
                 Model Performance Metrics
               </h3>
-              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-300 dark:via-purple-700 to-transparent"></div>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-stellar-400/25 to-transparent"></div>
             </div>
             <ModelMetricsDisplay metrics={modelMetricsData[selectedModel]} modelType={selectedModel} />
           </div>
 
           {/* Input Mode Tabs */}
-              <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl">
+              <div className="flex gap-1 rounded-control border border-hairline bg-surface-sunken p-1">
                 {[
                   { mode: 'file' as InputMode, icon: 'fa-file-upload', label: 'File Upload' },
                   { mode: 'manual' as InputMode, icon: 'fa-keyboard', label: 'Manual Input' }
@@ -1123,10 +1121,10 @@ const Dashboard: React.FC = () => {
                   <button
                     key={tab.mode}
                     onClick={() => setInputMode(tab.mode)}
-                    className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all text-sm md:text-base ${
+                    className={`flex-1 rounded-[7px] px-4 py-2.5 text-sm font-medium transition-colors md:text-base ${
                       inputMode === tab.mode
-                        ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 text-white shadow-lg scale-105'
-                        : 'bg-transparent text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700'
+                        ? 'bg-surface-raised text-accent shadow-panel'
+                        : 'bg-transparent text-ink-tertiary hover:text-ink'
                     }`}
                   >
                     <i className={`fas ${tab.icon} mr-2`}></i>
@@ -1137,20 +1135,20 @@ const Dashboard: React.FC = () => {
 
               {/* View Last Results Button */}
               {hasLastResults && (
-                <div className="bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-xl p-4 border border-cyan-200 dark:border-cyan-800">
+                <div className="rounded-card border border-hairline bg-surface-raised p-4">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center shadow-md">
-                        <i className="fas fa-history text-white text-lg"></i>
+                      <div className="flex h-10 w-10 items-center justify-center rounded-control border border-hairline bg-surface text-accent">
+                        <i className="fas fa-history text-lg"></i>
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-800 dark:text-white text-sm">Previous Results Available</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">View your last ML prediction results</p>
+                        <p className="text-sm font-medium text-ink">Previous Results Available</p>
+                        <p className="text-xs text-ink-tertiary">View your last ML prediction results</p>
                       </div>
                     </div>
                     <button
                       onClick={viewLastResults}
-                      className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-semibold transition-all hover:shadow-lg hover:scale-105 text-sm whitespace-nowrap"
+                      className="btn-space btn-secondary whitespace-nowrap text-sm"
                     >
                       <i className="fas fa-eye mr-2"></i>
                       View Last Results
@@ -1166,37 +1164,37 @@ const Dashboard: React.FC = () => {
                     onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                     onDragLeave={() => setIsDragging(false)}
                     onDrop={handleDrop}
-                    className={`relative border-2 border-dashed rounded-2xl p-8 md:p-12 text-center transition-all duration-300 ${
+                    className={`relative rounded-panel border border-dashed p-8 text-center transition-colors duration-300 md:p-12 ${
                       isDragging
-                        ? 'border-purple-500 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 dark:from-purple-900/40 dark:via-pink-900/40 dark:to-blue-900/40 scale-105 shadow-2xl'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500 bg-gradient-to-br from-gray-50 to-white dark:from-gray-800/50 dark:to-gray-800/30'
+                        ? 'border-stellar-400/60 bg-stellar-400/[0.06]'
+                        : 'border-hairline-strong bg-surface-raised hover:border-stellar-400/40'
                     }`}
                   >
                     {uploadedFile ? (
                       <div className="space-y-4">
-                        <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-lg">
-                          <i className="fas fa-file-csv text-white text-2xl md:text-3xl"></i>
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-stellar-400/30 bg-stellar-400/10 text-accent md:h-20 md:w-20">
+                          <i className="fas fa-file-csv text-2xl md:text-3xl"></i>
                         </div>
                         <div>
-                          <p className="font-bold text-gray-800 dark:text-white text-lg mb-1">{uploadedFile.name}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{(uploadedFile.size / 1024).toFixed(2)} KB</p>
+                          <p className="mb-1 text-lg font-medium text-ink">{uploadedFile.name}</p>
+                          <p className="font-mono text-sm text-ink-tertiary">{(uploadedFile.size / 1024).toFixed(2)} KB</p>
                         </div>
                         <button
                           onClick={() => { setUploadedFile(null); setFileInfoMessage(null); }}
-                          className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors font-medium"
+                          className="btn-space border border-hairline bg-surface text-sm font-medium text-ink-secondary transition-colors hover:border-red-400/40 hover:text-red-300"
                         >
                           <i className="fas fa-times mr-2"></i>Remove File
                         </button>
                       </div>
                     ) : (
                       <div>
-                        <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg animate-bounce">
-                          <i className="fas fa-cloud-upload-alt text-white text-2xl md:text-3xl"></i>
+                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-hairline bg-surface text-accent md:h-20 md:w-20">
+                          <i className="fas fa-cloud-upload-alt text-2xl md:text-3xl"></i>
                         </div>
-                        <p className="text-gray-700 dark:text-gray-300 font-semibold mb-2 text-base md:text-lg">
+                        <p className="mb-2 text-base font-medium text-ink-secondary md:text-lg">
                           Drop your file here or click to browse
                         </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                        <p className="mb-6 text-sm text-ink-tertiary">
                           Supported formats: CSV, TXT, XLSX (max 5MB)
                         </p>
                         <input
@@ -1206,10 +1204,10 @@ const Dashboard: React.FC = () => {
                           className="hidden"
                           id="file-upload-cosmic"
                         />
-                        <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+                        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                           <label
                             htmlFor="file-upload-cosmic"
-                            className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-xl cursor-pointer transition-all hover:scale-105"
+                            className="btn-space btn-secondary cursor-pointer"
                           >
                             <i className="fas fa-folder-open mr-2"></i>
                             Choose File
@@ -1219,13 +1217,13 @@ const Dashboard: React.FC = () => {
                             type="button"
                             onClick={loadSampleDataset}
                             disabled={isAnalyzing}
-                            className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold hover:shadow-xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                            className="btn-space btn-secondary disabled:cursor-not-allowed disabled:opacity-40"
                           >
                             <i className="fas fa-dice mr-2"></i>
                             {isAnalyzing ? 'Loading...' : 'Try Sample Dataset'}
                           </button>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-4 italic">
+                        <p className="mt-4 text-xs italic text-ink-tertiary">
                           <i className="fas fa-info-circle mr-1"></i>
                           The sample dataset loads 50 random exoplanets from NASA's {selectedModel.toUpperCase()} dataset
                         </p>
@@ -1235,8 +1233,8 @@ const Dashboard: React.FC = () => {
 
                   {/* File Messages */}
                   {fileError && (
-                    <div className="p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-lg">
-                      <p className="text-red-700 dark:text-red-400 text-sm font-medium">
+                    <div className="rounded-control border border-red-400/25 bg-red-500/10 p-4">
+                      <p className="text-sm font-medium text-red-300">
                         <i className="fas fa-exclamation-triangle mr-2"></i>
                         {fileError}
                       </p>
@@ -1244,9 +1242,9 @@ const Dashboard: React.FC = () => {
                   )}
 
                   {fileInfoMessage && (
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-lg">
-                      <p className="text-blue-700 dark:text-blue-400 text-sm font-medium">
-                        <i className="fas fa-info-circle mr-2"></i>
+                    <div className="rounded-control border border-hairline bg-surface-raised p-4">
+                      <p className="text-sm font-medium text-ink-secondary">
+                        <i className="fas fa-info-circle mr-2 text-accent"></i>
                         {fileInfoMessage}
                       </p>
                     </div>
@@ -1254,34 +1252,34 @@ const Dashboard: React.FC = () => {
 
                   {/* Validation Errors - Enhanced */}
                   {validationErrors.length > 0 && (
-                    <div className="p-5 bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-500 rounded-xl shadow-lg">
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
-                          <i className="fas fa-exclamation-triangle text-white text-lg"></i>
+                    <div className="rounded-card border border-red-400/25 bg-red-500/[0.07] p-5">
+                      <div className="mb-3 flex items-start gap-3">
+                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-control border border-red-400/30 bg-red-500/10 text-red-300">
+                          <i className="fas fa-exclamation-triangle text-lg"></i>
                         </div>
                         <div>
-                          <p className="text-red-800 dark:text-red-300 text-base font-bold mb-1">
+                          <p className="mb-1 font-display text-base font-semibold text-red-200">
                             File Validation Failed
                           </p>
-                          <p className="text-red-700 dark:text-red-400 text-sm">
+                          <p className="text-sm text-red-300/90">
                             Your file has {validationErrors.length} error{validationErrors.length > 1 ? 's' : ''} that must be fixed before running the ML model.
                           </p>
                         </div>
                       </div>
-                      <div className="mt-3 bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
+                      <div className="mt-3 rounded-control border border-hairline bg-surface-sunken p-3">
                         <ul className="space-y-2">
                           {validationErrors.map((error, idx) => (
-                            <li key={idx} className="flex items-start gap-2 text-red-700 dark:text-red-400 text-sm">
+                            <li key={idx} className="flex items-start gap-2 text-sm text-red-300/90">
                               <i className="fas fa-times-circle mt-0.5 flex-shrink-0"></i>
                               <span>{error}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
-                      <div className="mt-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg border border-blue-300 dark:border-blue-700">
-                        <p className="text-blue-800 dark:text-blue-300 text-xs font-medium">
-                          <i className="fas fa-info-circle mr-1"></i>
-                          <strong>How to fix:</strong> Ensure your CSV file includes all required columns listed above and that the column names match exactly (case-sensitive).
+                      <div className="mt-4 rounded-control border border-hairline bg-surface-raised p-3">
+                        <p className="text-xs font-medium text-ink-secondary">
+                          <i className="fas fa-info-circle mr-1 text-accent"></i>
+                          <strong className="text-ink">How to fix:</strong> Ensure your CSV file includes all required columns listed above and that the column names match exactly (case-sensitive).
                         </p>
                       </div>
                     </div>
@@ -1289,28 +1287,28 @@ const Dashboard: React.FC = () => {
 
                   {/* File Validation Status */}
                   {uploadedFile && !fileError && (
-                    <div className={`p-4 rounded-xl border-2 ${
+                    <div className={`rounded-card border p-4 ${
                       validationErrors.length === 0
-                        ? 'bg-green-50 dark:bg-green-900/20 border-green-500'
-                        : 'bg-red-50 dark:bg-red-900/20 border-red-500'
+                        ? 'border-stellar-400/25 bg-stellar-400/[0.07]'
+                        : 'border-red-400/25 bg-red-500/[0.07]'
                     }`}>
                       <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        <div className={`flex h-12 w-12 items-center justify-center rounded-control border ${
                           validationErrors.length === 0
-                            ? 'bg-green-500'
-                            : 'bg-red-500'
+                            ? 'border-stellar-400/30 bg-stellar-400/10 text-accent'
+                            : 'border-red-400/30 bg-red-500/10 text-red-300'
                         }`}>
                           <i className={`fas ${
                             validationErrors.length === 0
                               ? 'fa-check-circle'
                               : 'fa-exclamation-triangle'
-                          } text-white text-xl`}></i>
+                          } text-xl`}></i>
                         </div>
                         <div className="flex-1">
-                          <h4 className={`font-bold text-base ${
+                          <h4 className={`font-display text-base font-semibold ${
                             validationErrors.length === 0
-                              ? 'text-green-800 dark:text-green-300'
-                              : 'text-red-800 dark:text-red-300'
+                              ? 'text-ink'
+                              : 'text-red-200'
                           }`}>
                             {validationErrors.length === 0
                               ? 'File Validated Successfully'
@@ -1318,8 +1316,8 @@ const Dashboard: React.FC = () => {
                           </h4>
                           <p className={`text-sm ${
                             validationErrors.length === 0
-                              ? 'text-green-700 dark:text-green-400'
-                              : 'text-red-700 dark:text-red-400'
+                              ? 'text-ink-secondary'
+                              : 'text-red-300/90'
                           }`}>
                             {validationErrors.length === 0
                               ? 'All required columns are present and correctly formatted'
@@ -1330,16 +1328,16 @@ const Dashboard: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Analyze Button - Only enabled when validation passes */}
+                  {/* Analyze Button - the one primary CTA (signal amber). Only enabled when validation passes */}
                   {uploadedFile && !fileError && (
                     <button
                       onClick={handleAnalyze}
                       disabled={isAnalyzing || validationErrors.length > 0}
-                      className={`w-full px-6 py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${
+                      className={`btn-space w-full text-lg ${
                         validationErrors.length > 0
-                          ? 'bg-gray-400 dark:bg-gray-600 text-gray-200 dark:text-gray-400 cursor-not-allowed'
-                          : 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white hover:shadow-2xl hover:scale-105'
-                      } ${isAnalyzing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          ? 'cursor-not-allowed border border-hairline bg-surface-sunken text-ink-tertiary'
+                          : 'btn-primary'
+                      } ${isAnalyzing ? 'cursor-not-allowed opacity-50' : ''}`}
                       title={validationErrors.length > 0 ? 'Fix validation errors before running ML analysis' : 'Run ML analysis on uploaded file'}
                     >
                       {isAnalyzing ? (
@@ -1365,17 +1363,17 @@ const Dashboard: React.FC = () => {
 
               {/* Manual Input Interface */}
               {inputMode === 'manual' && (
-                <div className="text-center p-8 md:p-12 bg-gradient-to-br from-gray-50 to-white dark:from-gray-800/50 dark:to-gray-800/30 rounded-2xl border border-gray-200 dark:border-gray-700">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <i className="fas fa-keyboard text-white text-2xl md:text-3xl"></i>
+                <div className="rounded-panel border border-hairline bg-surface-raised p-8 text-center md:p-12">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-hairline bg-surface text-accent md:h-20 md:w-20">
+                    <i className="fas fa-keyboard text-2xl md:text-3xl"></i>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Manual Data Entry</h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  <h3 className="mb-2 font-display text-xl font-semibold text-ink">Manual Data Entry</h3>
+                  <p className="mb-6 text-ink-secondary">
                     Enter exoplanet features manually in a structured table format
                   </p>
                   <button
                     onClick={() => setShowManualInputModal(true)}
-                    className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold hover:shadow-xl transition-all hover:scale-105"
+                    className="btn-space btn-secondary"
                   >
                     <i className="fas fa-table mr-2"></i>
                     Open Manual Input Table
@@ -1394,42 +1392,42 @@ const Dashboard: React.FC = () => {
           icon={<i className="fas fa-chart-pie"></i>}
         >
           {analysisResult.error ? (
-            <div className="p-6 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-xl">
-              <p className="text-red-700 dark:text-red-400 font-medium">
+            <div className="rounded-card border border-red-400/25 bg-red-500/10 p-6">
+              <p className="font-medium text-red-300">
                 <i className="fas fa-times-circle mr-2"></i>
                 {analysisResult.error}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-300 dark:border-green-700 rounded-2xl">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <i className="fas fa-percentage text-white text-xl"></i>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div className="rounded-card border border-hairline bg-surface-raised p-6">
+                <div className="mb-3 flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-control border border-hairline bg-surface text-accent">
+                    <i className="fas fa-percentage text-xl"></i>
                   </div>
-                  <h3 className="font-bold text-gray-800 dark:text-white text-lg">Confidence Score</h3>
+                  <h3 className="font-display text-lg font-semibold text-ink">Confidence Score</h3>
                 </div>
-                <p className="text-5xl font-bold text-green-600 dark:text-green-400 mb-2">
+                <p className="mb-2 font-mono text-5xl font-semibold text-accent">
                   {(analysisResult.confidence * 100).toFixed(1)}%
                 </p>
-                <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-green-500 to-emerald-600 rounded-full transition-all duration-1000"
+                <div className="h-3 w-full overflow-hidden rounded-pill bg-surface-sunken">
+                  <div className="h-full rounded-pill bg-stellar-400 transition-all duration-1000"
                        style={{ width: `${analysisResult.confidence * 100}%` }}></div>
                 </div>
               </div>
 
               {analysisResult.type && (
-                <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-2xl">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <i className="fas fa-tag text-white text-xl"></i>
+                <div className="rounded-card border border-hairline bg-surface-raised p-6">
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-control border border-hairline bg-surface text-nebula-300">
+                      <i className="fas fa-tag text-xl"></i>
                     </div>
-                    <h3 className="font-bold text-gray-800 dark:text-white text-lg">Classification</h3>
+                    <h3 className="font-display text-lg font-semibold text-ink">Classification</h3>
                   </div>
-                  <p className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                  <p className="mb-2 font-mono text-3xl font-semibold text-ink">
                     {analysisResult.type}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-ink-tertiary">
                     Based on {selectedModel.toUpperCase()} model analysis
                   </p>
                 </div>
@@ -1437,22 +1435,22 @@ const Dashboard: React.FC = () => {
 
               {analysisResult.confirmed === null && (
                 <div className="md:col-span-2">
-                  <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded-lg mb-4">
-                    <p className="text-yellow-700 dark:text-yellow-400 text-sm">
-                      <i className="fas fa-exclamation-triangle mr-2"></i>
+                  <div className="mb-4 rounded-control border border-hairline bg-surface-raised p-4">
+                    <p className="text-sm text-ink-secondary">
+                      <i className="fas fa-exclamation-triangle mr-2 text-signal-400"></i>
                       Please confirm or reject this prediction
                     </p>
                   </div>
                   <div className="flex gap-3">
                     <button
                       onClick={() => setAnalysisResult({ ...analysisResult, confirmed: true, confidence: 1.0 })}
-                      className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold hover:shadow-xl transition-all hover:scale-105"
+                      className="btn-space flex-1 border border-stellar-400/30 bg-stellar-400/15 text-stellar-200 transition-colors hover:bg-stellar-400/20"
                     >
                       <i className="fas fa-check mr-2"></i>Confirm
                     </button>
                     <button
                       onClick={() => setAnalysisResult({ ...analysisResult, confirmed: false, confidence: 0 })}
-                      className="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl font-semibold hover:shadow-xl transition-all hover:scale-105"
+                      className="btn-space flex-1 border border-red-400/25 bg-red-500/10 text-red-300 transition-colors hover:bg-red-500/[0.15]"
                     >
                       <i className="fas fa-times mr-2"></i>Reject
                     </button>
@@ -1469,59 +1467,59 @@ const Dashboard: React.FC = () => {
 
       {/* Hyperparameters Modal - Coming Soon */}
       <Modal isOpen={showHyperparamsModal} onClose={() => setShowHyperparamsModal(false)}>
-        <div className="bg-white dark:bg-gray-800 px-6 pt-6 pb-4 sm:p-8 sm:pb-6">
+        <div className="px-6 pt-6 pb-4 sm:p-8 sm:pb-6">
           <div className="sm:flex sm:items-start">
-            <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xl leading-6 font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <i className="fas fa-sliders-h text-purple-600 dark:text-purple-400"></i>
+            <div className="mt-3 w-full text-center sm:mt-0 sm:text-left">
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="flex items-center gap-2 font-display text-xl font-semibold leading-6 text-ink">
+                  <i className="fas fa-sliders-h text-accent"></i>
                   Adjust Hyperparameters
                 </h3>
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300">
+                <span className="rounded-pill border border-hairline bg-surface px-3 py-1 text-eyebrow text-ink-tertiary">
                   Coming Soon
                 </span>
               </div>
-              
-              <div className="mt-6 text-center py-12">
+
+              <div className="mt-6 py-12 text-center">
                 <div className="mb-6">
-                  <i className="fas fa-rocket text-6xl text-purple-500 dark:text-purple-400 opacity-50"></i>
+                  <i className="fas fa-rocket text-6xl text-accent opacity-60"></i>
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                <h4 className="mb-3 font-display text-lg font-semibold text-ink">
                   Feature Under Development
                 </h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                <p className="mx-auto mb-6 max-w-md text-sm text-ink-secondary">
                   We're working on bringing you the ability to fine-tune model hyperparameters. This feature will allow you to:
                 </p>
-                <ul className="text-left max-w-md mx-auto space-y-2 mb-8">
-                  <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300">
-                    <i className="fas fa-check-circle text-green-500 mt-0.5"></i>
+                <ul className="mx-auto mb-8 max-w-md space-y-2 text-left">
+                  <li className="flex items-start gap-3 text-sm text-ink-secondary">
+                    <i className="fas fa-check-circle mt-0.5 text-accent"></i>
                     <span>Adjust learning rates and batch sizes</span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300">
-                    <i className="fas fa-check-circle text-green-500 mt-0.5"></i>
+                  <li className="flex items-start gap-3 text-sm text-ink-secondary">
+                    <i className="fas fa-check-circle mt-0.5 text-accent"></i>
                     <span>Configure dropout and regularization</span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300">
-                    <i className="fas fa-check-circle text-green-500 mt-0.5"></i>
+                  <li className="flex items-start gap-3 text-sm text-ink-secondary">
+                    <i className="fas fa-check-circle mt-0.5 text-accent"></i>
                     <span>Select different optimizers</span>
                   </li>
-                  <li className="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300">
-                    <i className="fas fa-check-circle text-green-500 mt-0.5"></i>
+                  <li className="flex items-start gap-3 text-sm text-ink-secondary">
+                    <i className="fas fa-check-circle mt-0.5 text-accent"></i>
                     <span>Real-time model retraining</span>
                   </li>
                 </ul>
-                <p className="text-xs text-gray-500 dark:text-gray-500 italic">
+                <p className="text-xs italic text-ink-tertiary">
                   Stay tuned for updates!
                 </p>
               </div>
             </div>
           </div>
         </div>
-        <div className="bg-gray-100 dark:bg-gray-700 px-6 py-4 sm:px-8 sm:flex sm:flex-row-reverse gap-3 border-t border-gray-200 dark:border-gray-600">
-          <button 
+        <div className="gap-3 border-t border-hairline bg-surface-sunken px-6 py-4 sm:flex sm:flex-row-reverse sm:px-8">
+          <button
             type="button"
             onClick={() => setShowHyperparamsModal(false)}
-            className="w-full inline-flex justify-center items-center gap-2 rounded-lg border border-transparent shadow-md px-6 py-3 bg-purple-600 text-base font-semibold text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:w-auto transition-all"
+            className="btn-space btn-primary w-full sm:w-auto"
           >
             <i className="fas fa-check mr-1"></i>
             Got It
@@ -1531,18 +1529,19 @@ const Dashboard: React.FC = () => {
 
       {/* Manual Input Modal */}
       <Modal isOpen={showManualInputModal} onClose={() => { setShowManualInputModal(false); setIsManualInputFullscreen(false); }} maxWidth="6xl" flexLayout fullscreen={isManualInputFullscreen}>
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-between">
-          <div>
-            <h3 className="text-2xl font-bold text-white flex items-center gap-2">
-              <i className="fas fa-table"></i>
+        <div className="relative flex items-center justify-between overflow-hidden border-b border-hairline bg-surface-raised p-6">
+          <div className="pointer-events-none absolute inset-0 bg-nebula-veil opacity-60" aria-hidden="true" />
+          <div className="relative">
+            <h3 className="flex items-center gap-2 font-display text-2xl font-semibold tracking-tight text-ink">
+              <i className="fas fa-table text-accent"></i>
               Manual Data Entry
             </h3>
-            <p className="text-indigo-100 text-sm mt-1">Enter values for {selectedModel.toUpperCase()} model features</p>
+            <p className="mt-1 text-sm text-ink-tertiary">Enter values for {selectedModel.toUpperCase()} model features</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="relative flex items-center gap-2">
             <button
               onClick={() => setIsManualInputFullscreen(!isManualInputFullscreen)}
-              className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors flex items-center gap-2"
+              className="btn-space btn-secondary text-sm"
               title={isManualInputFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             >
               <i className={`fas ${isManualInputFullscreen ? 'fa-compress' : 'fa-expand'}`}></i>
@@ -1551,55 +1550,55 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-6 overflow-auto flex-1">
-          <div className="mb-4 flex items-center justify-between">
+        <div className="flex-1 overflow-auto p-6">
+          <div className="mb-4 flex items-center justify-between gap-2">
             <button
               onClick={() => setShowOptionalFieldsInManual(!showOptionalFieldsInManual)}
-              className="px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors text-sm font-medium"
+              className="btn-space btn-secondary text-sm"
             >
               <i className="fas fa-eye mr-2"></i>
               {showOptionalFieldsInManual ? 'Hide' : 'Show'} Optional Fields ({optionalColumns[selectedModel].length})
             </button>
             <div className="flex gap-2">
-              <button onClick={addManualRow} className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-sm font-medium">
+              <button onClick={addManualRow} className="btn-space btn-secondary text-sm">
                 <i className="fas fa-plus mr-2"></i>Add Row
               </button>
-              <button onClick={exportManualDataToCSV} className="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors text-sm font-medium">
+              <button onClick={exportManualDataToCSV} className="btn-space btn-secondary text-sm">
                 <i className="fas fa-download mr-2"></i>Export CSV
               </button>
             </div>
           </div>
 
-          <div className={`overflow-auto border border-gray-200 dark:border-gray-700 rounded-lg ${isManualInputFullscreen ? 'max-h-[calc(100vh-300px)]' : 'max-h-96'}`}>
+          <div className={`overflow-auto rounded-card border border-hairline ${isManualInputFullscreen ? 'max-h-[calc(100vh-300px)]' : 'max-h-96'}`}>
             <table className="min-w-full">
-              <thead className="sticky top-0 bg-gray-100 dark:bg-gray-700 z-10">
+              <thead style={{ backgroundColor: 'var(--bg)' }} className="sticky top-0 z-10">
                 <tr>
-                  <th className="sticky left-0 bg-gray-100 dark:bg-gray-700 px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300">#</th>
+                  <th style={{ backgroundColor: 'var(--bg)' }} className="sticky left-0 px-4 py-3 text-left text-eyebrow text-ink-tertiary">#</th>
                   {modelColumns[selectedModel].map((col) => (
-                    <th key={col} className="px-4 py-3 text-left text-xs font-semibold bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 min-w-[150px]">
+                    <th key={col} className="min-w-[150px] px-4 py-3 text-left text-eyebrow text-accent">
                       {columnDisplayNames[col] || col}
-                      <span className="text-red-500 ml-1">*</span>
+                      <span className="ml-1 text-red-400">*</span>
                     </th>
                   ))}
                   {showOptionalFieldsInManual && optionalColumns[selectedModel].map((col) => (
-                    <th key={col} className="px-4 py-3 text-left text-xs font-semibold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 min-w-[150px]">
+                    <th key={col} className="min-w-[150px] px-4 py-3 text-left text-eyebrow text-nebula-300">
                       {columnDisplayNames[col] || col}
                     </th>
                   ))}
-                  <th className="sticky right-0 bg-gray-100 dark:bg-gray-700 px-4 py-3 text-right text-xs font-semibold text-gray-700 dark:text-gray-300">Actions</th>
+                  <th style={{ backgroundColor: 'var(--bg)' }} className="sticky right-0 px-4 py-3 text-right text-eyebrow text-ink-tertiary">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="divide-y divide-hairline">
                 {manualData.map((row, index) => (
-                  <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                    <td className="sticky left-0 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">{index + 1}</td>
+                  <tr key={index} className="transition-colors hover:bg-surface">
+                    <td className="sticky left-0 px-4 py-2 font-mono text-sm font-medium text-ink-tertiary" style={{ backgroundColor: 'var(--bg)' }}>{index + 1}</td>
                     {modelColumns[selectedModel].map((col) => (
                       <td key={col} className="px-4 py-2">
                         <input
                           type="text"
                           value={row[col] || ''}
                           onChange={(e) => updateManualData(index, col, e.target.value)}
-                          className="w-full px-2 py-1 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded text-sm"
+                          className="w-full rounded-control border border-hairline bg-surface-sunken px-2 py-1 text-sm text-ink placeholder-ink-tertiary transition-colors focus:border-stellar-400/50 focus:outline-none"
                           placeholder={columnDisplayNames[col] || col}
                         />
                       </td>
@@ -1610,16 +1609,16 @@ const Dashboard: React.FC = () => {
                           type="text"
                           value={row[col] || ''}
                           onChange={(e) => updateManualData(index, col, e.target.value)}
-                          className="w-full px-2 py-1 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded text-sm"
+                          className="w-full rounded-control border border-hairline bg-surface-sunken px-2 py-1 text-sm text-ink placeholder-ink-tertiary transition-colors focus:border-stellar-400/50 focus:outline-none"
                           placeholder={columnDisplayNames[col] || col}
                         />
                       </td>
                     ))}
-                    <td className="sticky right-0 bg-white dark:bg-gray-800 px-4 py-2 text-right">
+                    <td className="sticky right-0 px-4 py-2 text-right" style={{ backgroundColor: 'var(--bg)' }}>
                       {manualData.length > 1 && (
                         <button
                           onClick={() => removeManualRow(index)}
-                          className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
+                          className="text-ink-tertiary transition-colors hover:text-red-300"
                         >
                           <i className="fas fa-trash"></i>
                         </button>
@@ -1632,16 +1631,16 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+        <div className="flex justify-end gap-3 border-t border-hairline p-6">
           <button
             onClick={() => { setManualData([{}]); setShowManualInputModal(false); setIsManualInputFullscreen(false); }}
-            className="px-6 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium"
+            className="btn-space btn-secondary"
           >
-            Clear & Close
+            Clear &amp; Close
           </button>
           <button
             onClick={() => { setShowManualInputModal(false); setIsManualInputFullscreen(false); }}
-            className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:shadow-xl transition-all font-medium"
+            className="btn-space btn-primary"
           >
             Done
           </button>

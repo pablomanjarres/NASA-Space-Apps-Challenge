@@ -1,38 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero';
-import Footer from '../components/Footer.astro';
 ---
 
 <Layout title="A World Away: Hunting for Exoplanets with AI">
-  <!-- Dark mode initialization script - runs before page renders -->
-  <script is:inline>
-    // Check for saved dark mode preference or system preference
-    const savedTheme = localStorage.getItem('darkMode');
-    const savedFontSize = localStorage.getItem('fontSize');
-    
-    if (savedTheme !== null) {
-      // Use saved preference
-      if (savedTheme === 'true') {
-        document.documentElement.classList.add('dark');
-      }
-    } else {
-      // Check system preference as fallback
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('darkMode', 'true');
-      }
-    }
-
-    // Apply saved font size
-    if (savedFontSize) {
-      document.documentElement.classList.add(`font-${savedFontSize}`);
-    }
-  </script>
-
-  <body class="bg-black text-gray-100 font-sans antialiased transition-colors duration-200">
   <main>
-  <Hero client:load/>
+    <Hero client:load />
   </main>
-  </body>
 </Layout>

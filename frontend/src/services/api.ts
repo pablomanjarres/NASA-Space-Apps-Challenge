@@ -2,6 +2,16 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://grit-x-awa-1035421252747.europe-west1.run.app';
 // For local development: 'http://localhost:8000'
 
+// Key-free DEMO mode: when ON (default for the deployed site), prediction /
+// analysis calls return canned fixtures instead of hitting the live backend.
+import {
+  isDemoMode,
+  buildDemoUploadResponse,
+  demoModelInfo,
+  demoSpaceData,
+  makeDemoPredictions,
+} from '../lib/demoFixtures';
+
 export interface SpaceData {
   id: string | number;
   // Kepler fields
@@ -105,10 +115,12 @@ class ApiService {
   }
 
   async getDatasets(): Promise<SpaceData[]> {
+    if (isDemoMode()) return demoSpaceData('kepler');
     return this.request<SpaceData[]>('/data/');
   }
 
   async createDataset(data: Omit<SpaceData, 'id'>): Promise<SpaceData> {
+    if (isDemoMode()) return { ...data, id: `demo-${Date.now()}` } as SpaceData;
     return this.request<SpaceData>('/data/data', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -116,6 +128,10 @@ class ApiService {
   }
 
   async getPredictions(data: PredictionRequest): Promise<PredictionResponse> {
+    if (isDemoMode()) {
+      const rows = Array.isArray(data?.input) ? data.input.length : 1;
+      return { prediction: makeDemoPredictions(Math.max(1, rows), 'kepler', `demo-${Date.now()}`) };
+    }
     return this.request<PredictionResponse>('/predictions/', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -123,10 +139,18 @@ class ApiService {
   }
 
   async getModelInfo(): Promise<ModelInfo> {
+    if (isDemoMode()) return demoModelInfo();
     return this.request<ModelInfo>('/models/');
   }
 
   async runDeepAnalysis(objectId: string): Promise<any> {
+    if (isDemoMode()) {
+      return {
+        object_id: objectId,
+        demo: true,
+        summary: 'Demo mode — sample deep-analysis output (no live backend).',
+      };
+    }
     return this.request<any>(`/analysis/deep/${objectId}`);
   }
 
@@ -136,6 +160,15 @@ class ApiService {
    * @returns Upload response with predictions
    */
   async uploadAndPredict(file: File): Promise<UploadResponse> {
+    // DEMO mode: return a realistic canned prediction fixture instead of
+    // calling the backend. Covers both CSV-upload and manual-entry (which is
+    // exported to CSV and uploaded through this same seam).
+    if (isDemoMode()) {
+      // brief pause so the analysis animation reads as a real run
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      return buildDemoUploadResponse(file);
+    }
+
     const formData = new FormData();
     formData.append('file', file);
 
@@ -202,6 +235,14 @@ class ApiService {
    * @param jobId - Unique job identifier
    */
   async getPredictionsByJobId(jobId: string): Promise<PredictionJobResponse> {
+    if (isDemoMode()) {
+      return {
+        job_id: jobId,
+        dataset_type: 'kepler',
+        created_at: new Date().toISOString(),
+        predictions: makeDemoPredictions(12, 'kepler', jobId),
+      };
+    }
     return this.request<PredictionJobResponse>(`/api/v1/predictions/job/${jobId}`);
   }
 
@@ -210,6 +251,9 @@ class ApiService {
    * @param limit - Maximum number of predictions to return
    */
   async getRecentPredictions(limit: number = 50): Promise<PredictionResult[]> {
+    if (isDemoMode()) {
+      return makeDemoPredictions(Math.min(limit, 12), 'kepler', `demo-recent`);
+    }
     return this.request<PredictionResult[]>(`/api/v1/predictions/recent?limit=${limit}`);
   }
 }

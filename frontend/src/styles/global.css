@@ -1,169 +1,250 @@
 @import './progress.css';
 
 @tailwind base;
-@tailwind componen/* Help cursor - Info spaceship */
-.cursor-help {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cdefs%3E%3CradialGradient id='help-glow'%3E%3Cstop offset='0%25' style='stop-color:%2306b6d4;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%2322d3ee;stop-opacity:0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='18' r='13' fill='url(%23help-glow)' opacity='0.6'/%3E%3Ccircle cx='16' cy='18' r='12' fill='none' stroke='%2306b6d4' stroke-width='2.5'/%3E%3Ctext x='16' y='24' text-anchor='middle' font-family='Arial, sans-serif' font-size='16' font-weight='bold' fill='%23ffffff'%3E%3F%3C/text%3E%3Cpath d='M16 2 L18 6 L16 6 L14 6 Z' fill='%2322d3ee'/%3E%3Ccircle cx='16' cy='4' r='1' fill='%23ffffff'/%3E%3C/svg%3E") 16 18, help;
-}
-
-/* ============================================
-   🎨 CUSTOM ANIMATIONS
-   ============================================ */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes rotate360 {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-/* Animation utility classes */
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-shimmer {
-  animation: shimmer 2s linear infinite;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  background-size: 1000px 100%;
-}
+@tailwind components;
 @tailwind utilities;
 
-/* ============================================
-   🚀 ANIMATED SPACE-THEMED CURSORS 🚀
-   ============================================
-   
-   Beautiful animated spaceship cursors!
-   The spaceship points in the direction of interaction.
-   ============================================ */
+/* ============================================================================
+   GRIT-X-AWA — unified cosmic design tokens
+   Deep-space observatory / mission-control. Dark is the primary theme;
+   light is a graceful fallback. See DESIGN-SYSTEM.md for the contract.
+   ============================================================================ */
+:root {
+  /* fonts (3 roles) */
+  --font-display: 'Chakra Petch', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', 'Monaco', ui-monospace, monospace;
 
-/* Default cursor - Spaceship pointing up-right */
-body {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='glow' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' style='stop-color:%23a855f7;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%237c3aed;stop-opacity:0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse cx='16' cy='20' rx='8' ry='4' fill='url(%23glow)' opacity='0.6'/%3E%3Cpath d='M16 4 L20 12 L18 12 L18 18 L14 18 L14 12 L12 12 Z' fill='%23a855f7' stroke='%237c3aed' stroke-width='1.5'/%3E%3Ccircle cx='16' cy='8' r='2' fill='%2360a5fa' opacity='0.8'/%3E%3Cpath d='M12 14 L8 16 L12 16 Z' fill='%23ec4899' opacity='0.8'/%3E%3Cpath d='M20 14 L24 16 L20 16 Z' fill='%23ec4899' opacity='0.8'/%3E%3Cpath d='M14 18 L15 22 L16 20 L17 22 L18 18 Z' fill='%23fbbf24' opacity='0.9'/%3E%3Cpath d='M15 20 L15.5 24 L16 22 L16.5 24 L17 20 Z' fill='%23fb923c' opacity='0.7'/%3E%3Ccircle cx='14' cy='24' r='1' fill='%23fbbf24' opacity='0.5'/%3E%3Ccircle cx='18' cy='24' r='1' fill='%23fbbf24' opacity='0.5'/%3E%3Ccircle cx='16' cy='26' r='0.8' fill='%23fb923c' opacity='0.4'/%3E%3C/svg%3E") 16 4, auto;
+  /* palette — fixed hues */
+  --void-950: #04060d;
+  --void-900: #070b16;
+  --void-800: #0b1122;
+  --void-700: #111a30;
+  --void-600: #1a2440;
+  --nebula-300: #c4b5fd;
+  --nebula-400: #a78bfa;
+  --nebula-500: #8b5cf6;
+  --nebula-600: #7c5cf0;
+  --nebula-700: #5b4bd6;
+  --stellar-200: #a5f0fb;
+  --stellar-300: #67e8f9;
+  --stellar-400: #22d3ee;
+  --stellar-500: #06b6d4;
+  --stellar-600: #0891b2;
+  --signal-400: #f7b23f;
+  --signal-500: #f5a524;
+  --signal-600: #d98a1a;
+
+  /* accents */
+  --accent: #22d3ee;    /* stellar cyan — data, links, active, focus */
+  --accent-2: #8b5cf6;  /* nebula violet — secondary highlights */
+  --signal: #f5a524;    /* warm amber — primary CTAs only */
+
+  /* semantic surfaces (dark-first) */
+  --bg: #070b16;
+  --surface: rgba(150, 170, 230, 0.035);
+  --surface-raised: rgba(155, 175, 235, 0.06);
+  --surface-sunken: rgba(4, 6, 13, 0.55);
+  --panel: rgba(148, 163, 220, 0.05);
+  --border: rgba(150, 172, 255, 0.10);
+  --border-strong: rgba(150, 172, 255, 0.18);
+
+  /* semantic text — 3 roles */
+  --text-primary: #e8ecf8;
+  --text-secondary: #9aa6c8;
+  --text-tertiary: #626d92;
+
+  /* one soft shadow (+ an elevated variant for hover) */
+  --shadow-panel: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset, 0 18px 40px -24px rgba(2, 4, 10, 0.9);
+  --shadow-elevated: 0 24px 60px -28px rgba(2, 4, 10, 0.95);
+
+  /* radius scale */
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-panel: 20px;
+
+  color-scheme: dark;
 }
 
-/* Pointer cursor - Spaceship with boost effect */
-a, button, .cursor-pointer, [role="button"] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='boost' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' style='stop-color:%23ec4899;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23f472b6;stop-opacity:0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse cx='16' cy='22' rx='10' ry='6' fill='url(%23boost)' opacity='0.7'/%3E%3Cpath d='M16 3 L21 12 L19 12 L19 18 L13 18 L13 12 L11 12 Z' fill='%23f472b6' stroke='%23ec4899' stroke-width='2'/%3E%3Ccircle cx='16' cy='7' r='2.5' fill='%2360a5fa'/%3E%3Ccircle cx='16' cy='7' r='1.5' fill='%23ffffff' opacity='0.6'/%3E%3Cpath d='M11 13 L6 16 L11 17 Z' fill='%23a855f7'/%3E%3Cpath d='M21 13 L26 16 L21 17 Z' fill='%23a855f7'/%3E%3Cpath d='M13 18 L14 24 L15 21 L16 25 L17 21 L18 24 L19 18 Z' fill='%23fbbf24'/%3E%3Cpath d='M14 22 L15 28 L16 24 L17 28 L18 22 Z' fill='%23fb923c' opacity='0.8'/%3E%3Cpath d='M8 8 L10 10 M10 6 L12 8' stroke='%23ffffff' stroke-width='1' opacity='0.8'/%3E%3Ccircle cx='8' cy='8' r='1' fill='%23ffffff' opacity='0.9'/%3E%3C/svg%3E") 16 3, pointer;
+/* Light theme — graceful fallback when the .dark class is absent */
+html:not(.dark) {
+  --bg: #eef1fb;
+  --surface: rgba(14, 20, 40, 0.035);
+  --surface-raised: rgba(14, 20, 40, 0.06);
+  --surface-sunken: rgba(14, 20, 40, 0.05);
+  --panel: rgba(14, 20, 40, 0.045);
+  --border: rgba(16, 24, 52, 0.12);
+  --border-strong: rgba(16, 24, 52, 0.20);
+  --text-primary: #0d1428;
+  --text-secondary: #3c476a;
+  --text-tertiary: #6b7597;
+  color-scheme: light;
 }
 
-/* Grab cursor - Spaceship with grabbing claws */
-.cursor-grab, [draggable="true"] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='grab-glow'%3E%3Cstop offset='0%25' style='stop-color:%233b82f6;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%2360a5fa;stop-opacity:0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse cx='16' cy='20' rx='9' ry='5' fill='url(%23grab-glow)' opacity='0.5'/%3E%3Cpath d='M16 4 L20 12 L18 12 L18 17 L14 17 L14 12 L12 12 Z' fill='%2360a5fa' stroke='%233b82f6' stroke-width='1.5'/%3E%3Ccircle cx='16' cy='8' r='2' fill='%2393c5fd'/%3E%3Cpath d='M12 14 L8 15 L7 17 M20 14 L24 15 L25 17' stroke='%23fbbf24' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='7' cy='17' r='1.5' fill='%23fbbf24'/%3E%3Ccircle cx='25' cy='17' r='1.5' fill='%23fbbf24'/%3E%3Cpath d='M14 17 L15 21 L16 19 L17 21 L18 17 Z' fill='%2310b981' opacity='0.8'/%3E%3C/svg%3E") 16 4, grab;
+/* ============================================================================
+   Base
+   ============================================================================ */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(1100px 640px at 50% -8%, rgba(124, 92, 240, 0.13), transparent 60%),
+      radial-gradient(820px 560px at 92% 4%, rgba(34, 211, 238, 0.07), transparent 55%);
+    background-repeat: no-repeat;
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    min-height: 100vh;
+  }
+
+  /* Display font on major headings (mission-control voice) */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background: rgba(34, 211, 238, 0.28);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
 }
 
-/* Grabbing cursor - Spaceship with closed claws */
-.cursor-grabbing, [draggable="true"]:active {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='active-glow'%3E%3Cstop offset='0%25' style='stop-color:%23ec4899;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23f472b6;stop-opacity:0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse cx='16' cy='21' rx='11' ry='6' fill='url(%23active-glow)' opacity='0.8'/%3E%3Cpath d='M16 4 L20 12 L18 12 L18 17 L14 17 L14 12 L12 12 Z' fill='%23f472b6' stroke='%23ec4899' stroke-width='2'/%3E%3Ccircle cx='16' cy='8' r='2' fill='%23fbbf24'/%3E%3Cpath d='M12 14 L10 14 L10 16 M20 14 L22 14 L22 16' stroke='%23fbbf24' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='10' cy='16' r='2' fill='%23fb923c'/%3E%3Ccircle cx='22' cy='16' r='2' fill='%23fb923c'/%3E%3Cpath d='M14 17 L14 23 L15 20 L16 24 L17 20 L18 23 L18 17 Z' fill='%23fbbf24'/%3E%3C/svg%3E") 16 4, grabbing;
+/* ============================================================================
+   Components — reconciled to the token system
+   ============================================================================ */
+@layer components {
+  /* Font-role helpers */
+  .font-display { font-family: var(--font-display); }
+
+  /* 3 semantic text roles */
+  .text-primary { color: var(--text-primary); }
+  .text-secondary { color: var(--text-secondary); }
+  .text-tertiary { color: var(--text-tertiary); }
+  .text-accent { color: var(--accent); }
+  .text-signal { color: var(--signal); }
+
+  /* Glass panel — hairline border + ONE soft shadow (no gradient-on-everything) */
+  .glass {
+    background: var(--panel);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-panel);
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-panel);
+  }
+
+  /* Gradient text — stellar → nebula (the unified accent sweep) */
+  .gradient-text {
+    background-image: linear-gradient(100deg, var(--stellar-400), var(--nebula-400));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Buttons */
+  .btn-space {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: var(--radius-control);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.3s ease,
+                background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+  .btn-space:active { transform: translateY(1px); }
+
+  /* Primary = warm signal amber (THE call to action) */
+  .btn-primary {
+    background: var(--signal-500);
+    color: #0a0c14;
+    border: 1px solid transparent;
+    box-shadow: 0 10px 30px -14px rgba(245, 165, 36, 0.7);
+  }
+  .btn-primary:hover {
+    background: var(--signal-400);
+    box-shadow: 0 14px 34px -12px rgba(245, 165, 36, 0.85);
+  }
+
+  /* Secondary = stellar hairline outline */
+  .btn-secondary {
+    background: transparent;
+    color: var(--stellar-300);
+    border: 1px solid var(--border-strong);
+  }
+  .btn-secondary:hover {
+    border-color: var(--stellar-400);
+    background: rgba(34, 211, 238, 0.08);
+    color: var(--stellar-200);
+  }
+
+  /* On-theme structural helpers for later re-skins */
+  .hud-grid {
+    background-image:
+      linear-gradient(rgba(150, 172, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(150, 172, 255, 0.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .hairline { border: 1px solid var(--border); }
+  .hairline-strong { border: 1px solid var(--border-strong); }
+
+  .card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated, 0 24px 60px -28px rgba(2, 4, 10, 0.95));
+    border-color: var(--border-strong);
+  }
+
+  .focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
 }
 
-/* Text cursor - Rocket with text beam */
-.cursor-text, input[type="text"], input[type="email"], input[type="password"], textarea {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='32' viewBox='0 0 24 32'%3E%3Crect x='10' y='4' width='4' height='24' rx='2' fill='%237c3aed' opacity='0.7'/%3E%3Crect x='8' y='3' width='8' height='2' rx='1' fill='%237c3aed'/%3E%3Crect x='8' y='27' width='8' height='2' rx='1' fill='%237c3aed'/%3E%3Cpath d='M12 0 L14 3 L12 3 L10 3 Z' fill='%23a855f7'/%3E%3Ccircle cx='12' cy='2' r='0.8' fill='%2360a5fa'/%3E%3Ccircle cx='6' cy='12' r='0.5' fill='%23fbbf24'/%3E%3Ccircle cx='18' cy='16' r='0.5' fill='%23fbbf24'/%3E%3C/svg%3E") 12 16, text;
-}
+/* ============================================================================
+   Font-size accessibility scale (FontSizeToggle)
+   ============================================================================ */
+html.font-normal { font-size: 16px; }
+html.font-large { font-size: 18px; }
+html.font-larger { font-size: 20px; }
 
-/* Wait cursor - Spinning spaceship */
-.cursor-wait {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='wait-glow'%3E%3Cstop offset='0%25' style='stop-color:%237c3aed;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23a855f7;stop-opacity:0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='14' fill='none' stroke='%237c3aed' stroke-width='1.5' opacity='0.3' stroke-dasharray='4 4'/%3E%3Cpath d='M16 2 A14 14 0 0 1 30 16' fill='none' stroke='%23a855f7' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='8' fill='url(%23wait-glow)' opacity='0.6'/%3E%3Cpath d='M16 10 L18 14 L16 14 L14 14 Z' fill='%23ec4899'/%3E%3Ccircle cx='16' cy='12' r='1.5' fill='%2360a5fa'/%3E%3Ccircle cx='16' cy='4' r='1.5' fill='%23fbbf24'/%3E%3Ccircle cx='28' cy='16' r='1' fill='%23fb923c' opacity='0.8'/%3E%3C/svg%3E") 16 16, wait;
-}
-
-/* Not-allowed - Warning spaceship */
-.cursor-not-allowed, [disabled], button:disabled {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23ef4444' opacity='0.2'/%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%23ef4444' stroke-width='2.5'/%3E%3Cpath d='M8 8 L24 24 M24 8 L8 24' stroke='%23ef4444' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M16 10 L18 14 L16 14 L14 14 Z' fill='%23991b1b' opacity='0.6'/%3E%3Ccircle cx='16' cy='12' r='1' fill='%23fca5a5'/%3E%3C/svg%3E") 16 16, not-allowed;
-}
-
-/* Zoom in - Spaceship approaching */
-.cursor-zoom-in {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='13' cy='13' r='9' fill='none' stroke='%237c3aed' stroke-width='2.5'/%3E%3Cpath d='M20 20 L28 28' stroke='%237c3aed' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M13 8 L13 18 M8 13 L18 13' stroke='%2310b981' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M13 9 L14 11 L13 11 L12 11 Z' fill='%23a855f7'/%3E%3Ccircle cx='13' cy='10' r='0.8' fill='%2360a5fa'/%3E%3C/svg%3E") 16 16, zoom-in;
-}
-
-/* Zoom out - Spaceship departing */
-.cursor-zoom-out {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='13' cy='13' r='9' fill='none' stroke='%237c3aed' stroke-width='2.5'/%3E%3Cpath d='M20 20 L28 28' stroke='%237c3aed' stroke-width='3' stroke-linecap='round'/%3E%3Cpath d='M8 13 L18 13' stroke='%23ef4444' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='11' cy='15' r='0.8' fill='%23fb923c' opacity='0.6'/%3E%3Ccircle cx='15' cy='15' r='0.8' fill='%23fb923c' opacity='0.6'/%3E%3C/svg%3E") 16 16, zoom-out;
-}
-
-/* Move cursor - Hovering spaceship with thrusters */
-.cursor-move {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cdefs%3E%3CradialGradient id='move-glow'%3E%3Cstop offset='0%25' style='stop-color:%233b82f6;stop-opacity:0.6'/%3E%3Cstop offset='100%25' style='stop-color:%2360a5fa;stop-opacity:0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cellipse cx='18' cy='18' rx='16' ry='12' fill='url(%23move-glow)'/%3E%3Cpath d='M18 8 L22 16 L20 16 L20 20 L16 20 L16 16 L14 16 Z' fill='%2360a5fa' stroke='%233b82f6' stroke-width='1.5'/%3E%3Ccircle cx='18' cy='12' r='2' fill='%2393c5fd'/%3E%3Cpath d='M18 4 L19 7 L18 6 L17 7 Z' fill='%23fbbf24'/%3E%3Cpath d='M18 32 L17 29 L18 30 L19 29 Z' fill='%23fbbf24'/%3E%3Cpath d='M4 18 L7 17 L6 18 L7 19 Z' fill='%23fbbf24'/%3E%3Cpath d='M32 18 L29 19 L30 18 L29 17 Z' fill='%23fbbf24'/%3E%3Cpath d='M18 1 L20 4 L16 4 Z M18 35 L16 32 L20 32 Z M1 18 L4 16 L4 20 Z M35 18 L32 20 L32 16 Z' fill='%23fb923c' opacity='0.9'/%3E%3C/svg%3E") 18 18, move;
-}
-
-/* Help cursor - Info spaceship */
-.cursor-help {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='help-glow'%3E%3Cstop offset='0%25' style='stop-color:%2306b6d4;stop-opacity:0.8'/%3E%3Cstop offset='100%25' style='stop-color:%2322d3ee;stop-opacity:0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='18' r='13' fill='url(%23help-glow)' opacity='0.6'/%3E%3Ccircle cx='16' cy='18' r='12' fill='none' stroke='%2306b6d4' stroke-width='2.5'/%3E%3Ctext x='16' y='24' text-anchor='middle' font-family='Arial, sans-serif' font-size='16' font-weight='bold' fill='%23ffffff'%3E%3F%3C/text%3E%3Cpath d='M16 2 L18 6 L16 6 L14 6 Z' fill='%2322d3ee'/%3E%3Ccircle cx='16' cy='4' r='1' fill='%23ffffff'/%3E%3C/svg%3E") 16 18, help;
-}
-
-/* Font size variations */
-html.font-normal {
-  font-size: 16px;
-}
-
-html.font-large {
-  font-size: 18px;
-}
-
-html.font-larger {
-  font-size: 20px;
-}
-
-/* Custom CSS animations and styles for the Space ML app */
+/* ============================================================================
+   Utilities
+   ============================================================================ */
 @layer utilities {
-  .animation-delay-1000 {
-    animation-delay: 1s;
-  }
+  .animation-delay-1000 { animation-delay: 1s; }
+  .animation-delay-2000 { animation-delay: 2s; }
 
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-
-  /* Mobile touch optimizations */
   .touch-manipulation {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Prevent text selection on touch devices for UI elements */
   .no-select {
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -171,214 +252,118 @@ html.font-larger {
     user-select: none;
   }
 
-  /* Mobile-friendly spacing utilities */
-  .safe-padding-top {
-    padding-top: env(safe-area-inset-top);
-  }
+  .safe-padding-top { padding-top: env(safe-area-inset-top); }
+  .safe-padding-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-padding-left { padding-left: env(safe-area-inset-left); }
+  .safe-padding-right { padding-right: env(safe-area-inset-right); }
 
-  .safe-padding-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
+  .overscroll-contain { overscroll-behavior: contain; }
 
-  .safe-padding-left {
-    padding-left: env(safe-area-inset-left);
-  }
+  .active-scale { transition: transform 0.1s ease; }
+  .active-scale:active { transform: scale(0.97); }
 
-  .safe-padding-right {
-    padding-right: env(safe-area-inset-right);
-  }
-
-  /* Prevent overscroll bounce on iOS */
-  .overscroll-contain {
-    overscroll-behavior: contain;
-  }
-
-  /* Active states for mobile touch feedback */
-  .active-scale {
-    transition: transform 0.1s ease;
-  }
-
-  .active-scale:active {
-    transform: scale(0.95);
-  }
+  .text-glow { text-shadow: 0 0 12px rgba(34, 211, 238, 0.45); }
 }
 
-/* Thin, subtle scrollbar styling */
-::-webkit-scrollbar {
-  width: 4px;  /* Very thin scrollbar */
-  height: 4px;  /* For horizontal scrollbars */
-}
-
-::-webkit-scrollbar-track {
-  background: transparent; /* Track is transparent */
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.3);  /* Light mode: Purple with opacity */
-  border-radius: 4px;  /* Rounded corners */
-  transition: background 0.3s;  /* Smooth transition for hover effect */
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(168, 85, 247, 0.5);  /* Slightly more visible on hover */
-}
-
-/* Dark mode scrollbar */
-html.dark ::-webkit-scrollbar-thumb {
-  background: rgba(192, 132, 252, 0.4);  /* Dark mode: Lighter purple with opacity */
-}
-
-html.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(192, 132, 252, 0.6);  /* More visible on hover */
-}
-
-/* Hide scrollbar buttons (arrows) */
-::-webkit-scrollbar-button {
-  display: none;
-}
-
-/* For Firefox - Light mode */
-* {
-  scrollbar-width: thin;  /* "thin" instead of "none" */
-  scrollbar-color: rgba(168, 85, 247, 0.3) transparent;  /* thumb and track colors */
-}
-
-/* For Firefox - Dark mode */
-html.dark * {
-  scrollbar-color: rgba(192, 132, 252, 0.4) transparent;  /* lighter purple for dark mode */
-}
-
-/* For Edge - still need special handling */
-@supports (-ms-overflow-style: none) {
-  * {
-    -ms-overflow-style: -ms-autohiding-scrollbar;
-  }
-}
-
-/* Glassmorphism utility class */
-.glass {
-  @apply bg-white/10 dark:bg-black/10 backdrop-blur-lg border border-white/20 dark:border-white/10;
-}
-
-/* Gradient text utility */
-.gradient-text {
-  @apply bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent;
-}
-
-/* Custom button hover effects */
-.btn-space {
-  @apply px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105;
-}
-
-.btn-primary {
-  @apply btn-space bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg hover:shadow-purple-500/25;
-}
-
-.btn-secondary {
-  @apply btn-space border-2 border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-white;
-}
-
-/* Utility class for elements that should have the themed scrollbar */
-.themed-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.3);  /* Purple theme */
-}
-
-.themed-scrollbar.dark::-webkit-scrollbar-thumb,
-.dark .themed-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(168, 85, 247, 0.4);  /* Slightly more visible in dark mode */
-}
-
-/* Utility class to hide scrollbar completely on specific elements */
-.no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;             /* Chrome, Safari and Opera */
-}
-
-/* Loading animation */
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(168, 85, 247, 0.5); }
-  50% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.8); }
-}
-
-.pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* Page transition animations */
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideOutDown {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-}
-
+/* ============================================================================
+   Animations (retuned to the palette)
+   ============================================================================ */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
 
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes rotate360 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.14), transparent);
+  background-size: 1000px 100%;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(34, 211, 238, 0.45); }
+  50% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.8); }
+}
+.pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+/* Page transitions */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideOutDown {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(20px); }
+}
 @keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
+.page-enter { animation: slideInUp 0.3s ease-out forwards; }
+.page-exit { animation: slideOutDown 0.3s ease-in forwards; }
 
-/* Smooth page transition utility classes */
-.page-enter {
-  animation: slideInUp 0.3s ease-out forwards;
-}
-
-.page-exit {
-  animation: slideOutDown 0.3s ease-in forwards;
-}
-
-/* Space-themed background patterns */
+/* Space-themed background dot pattern */
 .space-dots {
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(150, 172, 255, 0.10) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
-/* Card hover effects */
-.card-hover {
-  @apply transform transition-all duration-300 hover:scale-105 hover:shadow-2xl;
+/* ============================================================================
+   Scrollbars — thin, stellar-tinted
+   ============================================================================ */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.22);
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(34, 211, 238, 0.42); }
+::-webkit-scrollbar-button { display: none; }
+
+html:not(.dark) ::-webkit-scrollbar-thumb { background: rgba(8, 145, 178, 0.3); }
+html:not(.dark) ::-webkit-scrollbar-thumb:hover { background: rgba(8, 145, 178, 0.5); }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 211, 238, 0.22) transparent;
+}
+html:not(.dark) * { scrollbar-color: rgba(8, 145, 178, 0.3) transparent; }
+
+@supports (-ms-overflow-style: none) {
+  * { -ms-overflow-style: -ms-autohiding-scrollbar; }
 }
 
-/* Text glow effect */
-.text-glow {
-  text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
-}
+.themed-scrollbar::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.24); }
+.themed-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.4); }
 
-/* Custom focus styles */
-.focus-visible {
-  @apply outline-none ring-2 ring-purple-500 ring-opacity-50;
-}
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
-/* Range slider improvements for dark mode */
+/* ============================================================================
+   Range slider — stellar thumb on tokenized track
+   ============================================================================ */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -386,66 +371,59 @@ input[type="range"] {
   cursor: pointer;
 }
 
-/* Track */
 input[type="range"]::-webkit-slider-track {
-  background: #d1d5db;
+  background: var(--surface-raised);
   height: 8px;
   border-radius: 4px;
 }
 
-.dark input[type="range"]::-webkit-slider-track {
-  background: #4b5563;
-}
-
-/* Thumb */
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background: #7c3aed;
-  border: 2px solid #ffffff;
+  background: var(--stellar-400);
+  border: 2px solid var(--void-900);
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
 }
-
 input[type="range"]::-webkit-slider-thumb:hover {
-  background: #5b21b6;
+  background: var(--stellar-300);
   transform: scale(1.1);
 }
 
-.dark input[type="range"]::-webkit-slider-thumb {
-  border: 2px solid #1f2937;
-}
-
-/* Firefox */
 input[type="range"]::-moz-range-track {
-  background: #d1d5db;
+  background: var(--surface-raised);
   height: 8px;
   border-radius: 4px;
   border: none;
 }
-
-.dark input[type="range"]::-moz-range-track {
-  background: #4b5563;
-}
-
 input[type="range"]::-moz-range-thumb {
   height: 16px;
   width: 16px;
   border-radius: 50%;
-  background: #7c3aed;
-  border: 2px solid #ffffff;
+  background: var(--stellar-400);
+  border: 2px solid var(--void-900);
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 input[type="range"]::-moz-range-thumb:hover {
-  background: #5b21b6;
+  background: var(--stellar-300);
   transform: scale(1.1);
 }
 
-.dark input[type="range"]::-moz-range-thumb {
-  border: 2px solid #1f2937;
+/* ============================================================================
+   Reduced motion — honor the OS setting everywhere
+   ============================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

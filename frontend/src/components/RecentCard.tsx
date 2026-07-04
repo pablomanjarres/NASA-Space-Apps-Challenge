@@ -10,36 +10,33 @@ const RecentCard: React.FC<RecentCardProps> = ({ commit, date, status }) => {
   const statusConfig = {
     success: {
       icon: 'fa-check-circle',
-      color: 'text-green-500 dark:text-green-400',
-      bgColor: 'bg-green-100 dark:bg-green-900/30',
-      borderColor: 'border-green-200 dark:border-green-800'
+      color: 'text-stellar-300',
+      chip: 'bg-stellar-400/10',
     },
     pending: {
       icon: 'fa-clock',
-      color: 'text-yellow-500 dark:text-yellow-400',
-      bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
-      borderColor: 'border-yellow-200 dark:border-yellow-800'
+      color: 'text-signal-400',
+      chip: 'bg-signal-500/10',
     },
     error: {
       icon: 'fa-exclamation-circle',
-      color: 'text-red-500 dark:text-red-400',
-      bgColor: 'bg-red-100 dark:bg-red-900/30',
-      borderColor: 'border-red-200 dark:border-red-800'
+      color: 'text-red-300',
+      chip: 'bg-red-500/10',
     }
   };
 
   const config = statusConfig[status];
 
   return (
-    <div className={`flex items-start gap-3 p-3 rounded-lg border ${config.borderColor} ${config.bgColor} hover:shadow-md transition-all duration-200`}>
-      <div className={`flex-shrink-0 w-8 h-8 rounded-full ${config.bgColor} flex items-center justify-center`}>
+    <div className="flex items-start gap-3 rounded-card border border-hairline bg-surface-raised p-3 transition-colors duration-200 hover:border-hairline-strong">
+      <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-control ${config.chip}`}>
         <i className={`fas ${config.icon} ${config.color} text-sm`}></i>
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-ink">
           {commit}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+        <p className="mt-0.5 font-mono text-xs text-ink-tertiary">
           {date}
         </p>
       </div>

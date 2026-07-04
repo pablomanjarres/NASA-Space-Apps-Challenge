@@ -10,13 +10,37 @@ interface VisualizationCardProps {
 }
 
 const VisualizationCard: React.FC<VisualizationCardProps> = ({ title, children }) => (
-  <div className="bg-gradient-to-br from-white to-purple-50/20 dark:from-gray-800 dark:to-gray-800/50 rounded-2xl shadow-xl overflow-hidden border border-purple-200/50 dark:border-purple-700/50 backdrop-blur-sm">
-    <div className="p-6 border-b border-purple-200/50 dark:border-purple-700/50 bg-gradient-to-r from-purple-50/50 to-pink-50/50 dark:from-purple-900/20 dark:to-pink-900/20">
-      <h2 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">{title}</h2>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{children}</p>
+  <div className="glass rounded-panel overflow-hidden">
+    <div className="p-6 border-b border-hairline">
+      <h2 className="font-display text-xl font-semibold text-ink">{title}</h2>
+      <p className="text-sm text-ink-tertiary mt-1">{children}</p>
     </div>
   </div>
 );
+
+// ---- Cosmic planet-type ramp (ordered small→large: stellar cyan → nebula violet)
+const PLANET_TYPE_RAMP = {
+  earth: '#67e8f9',   // stellar-300  — Earth-like
+  superEarth: '#22d3ee', // stellar-400 — Super-Earth
+  miniNeptune: '#a78bfa', // nebula-400 — Mini-Neptune
+  neptune: '#8b5cf6', // nebula-500 — Neptune-like
+  jupiter: '#5b4bd6', // nebula-700 — Jupiter-like
+} as const;
+
+const getPlanetHue = (radius: number): string => {
+  if (radius < 1.25) return PLANET_TYPE_RAMP.earth;
+  if (radius < 2.0) return PLANET_TYPE_RAMP.superEarth;
+  if (radius < 4.0) return PLANET_TYPE_RAMP.miniNeptune;
+  if (radius < 10.0) return PLANET_TYPE_RAMP.neptune;
+  return PLANET_TYPE_RAMP.jupiter;
+};
+
+// A lit-sphere fill for any hue — highlight top-left, darkened limb. One inset
+// shadow only (no colored glows), keeps the cosmic restraint.
+const sphereStyle = (hex: string): React.CSSProperties => ({
+  background: `radial-gradient(circle at 32% 28%, rgba(255,255,255,0.60) 0%, ${hex} 46%, #04060d 128%)`,
+  boxShadow: 'inset -5px -7px 15px rgba(4,6,13,0.55)',
+});
 
 // Planet Size Circle Component
 interface PlanetCircleProps {
@@ -28,10 +52,13 @@ interface PlanetCircleProps {
 
 const PlanetCircle: React.FC<PlanetCircleProps> = ({ size, color, name, radius }) => (
   <div className="flex flex-col items-center group">
-    <div className={`${size} rounded-full ${color} shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-2xl`}></div>
-    <p className="text-xs mt-3 font-semibold text-gray-800 dark:text-gray-300">{name}</p>
+    <div
+      className={`${size} rounded-full border border-white/10 transition-transform duration-300 group-hover:scale-105`}
+      style={sphereStyle(color)}
+    ></div>
+    <p className="text-xs mt-3 font-medium text-ink-secondary">{name}</p>
     {radius !== undefined && (
-      <p className="text-xs mt-1 text-gray-600 dark:text-gray-400">{radius.toFixed(2)} R⊕</p>
+      <p className="font-mono text-xs mt-1 text-ink-tertiary tabular-nums">{radius.toFixed(2)} R⊕</p>
     )}
   </div>
 );
@@ -44,50 +71,41 @@ interface DynamicPlanetComparisonProps {
 const DynamicPlanetComparison: React.FC<DynamicPlanetComparisonProps> = ({ planets }) => {
   // Sort planets by radius for better visualization
   const sortedPlanets = [...planets].sort((a, b) => a.radius - b.radius);
-  
+
   // Calculate sizes relative to the largest planet
   const maxRadius = Math.max(...sortedPlanets.map(p => p.radius));
   const baseSize = 160; // Maximum pixel size for the largest planet
-  
-  // Color palette for different sizes (scientific categorization)
-  const getColorByRadius = (radius: number) => {
-    if (radius < 1.25) return 'bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/50'; // Earth-like
-    if (radius < 2.0) return 'bg-gradient-to-br from-green-400 to-emerald-600 shadow-green-500/50'; // Super-Earth
-    if (radius < 4.0) return 'bg-gradient-to-br from-cyan-400 to-cyan-600 shadow-cyan-500/50'; // Mini-Neptune
-    if (radius < 10.0) return 'bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-indigo-500/50'; // Neptune-like
-    return 'bg-gradient-to-br from-orange-400 to-red-600 shadow-orange-500/50'; // Jupiter-like
-  };
-  
+
   const getPlanetSize = (radius: number) => {
     const scaledSize = (radius / maxRadius) * baseSize;
     // Ensure minimum visible size
     const size = Math.max(scaledSize, 24);
     return `${size}px`;
   };
-  
+
   return (
     <div className="flex flex-wrap items-end justify-center gap-8 min-h-[300px] py-8">
       {/* Always show Earth as reference */}
       <div className="flex flex-col items-center group">
-        <div 
-          className="rounded-full bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/50 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-2xl"
-          style={{ width: getPlanetSize(1.0), height: getPlanetSize(1.0) }}
+        <div
+          className="rounded-full border border-white/10 transition-transform duration-300 group-hover:scale-105"
+          style={{ width: getPlanetSize(1.0), height: getPlanetSize(1.0), ...sphereStyle(PLANET_TYPE_RAMP.earth) }}
         ></div>
-        <p className="text-xs mt-3 font-semibold text-gray-800 dark:text-gray-300">Earth (Reference)</p>
-        <p className="text-xs mt-1 text-gray-600 dark:text-gray-400">1.00 R⊕</p>
+        <p className="text-xs mt-3 font-medium text-ink-secondary">Earth (Reference)</p>
+        <p className="font-mono text-xs mt-1 text-ink-tertiary tabular-nums">1.00 R⊕</p>
       </div>
-      
+
       {/* Analyzed planets */}
       {sortedPlanets.map((planet, idx) => (
         <div key={planet.id || idx} className="flex flex-col items-center group">
-          <div 
-            className={`rounded-full ${getColorByRadius(planet.radius)} shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-2xl`}
-            style={{ width: getPlanetSize(planet.radius), height: getPlanetSize(planet.radius) }}
+          <div
+            className="rounded-full border border-white/10 transition-transform duration-300 group-hover:scale-105"
+            style={{ width: getPlanetSize(planet.radius), height: getPlanetSize(planet.radius), ...sphereStyle(getPlanetHue(planet.radius)) }}
           ></div>
-          <p className="text-xs mt-3 font-semibold text-gray-800 dark:text-gray-300 max-w-[120px] text-center truncate" title={planet.name}>
+          <p className="text-xs mt-3 font-medium text-ink-secondary max-w-[120px] text-center truncate" title={planet.name}>
             {planet.name}
           </p>
-          <p className="text-xs mt-1 text-gray-600 dark:text-gray-400">{planet.radius.toFixed(2)} R⊕</p>
+          <p className="font-mono text-xs mt-1 text-ink-tertiary tabular-nums">{planet.radius.toFixed(2)} R⊕</p>
         </div>
       ))}
     </div>
@@ -95,49 +113,31 @@ const DynamicPlanetComparison: React.FC<DynamicPlanetComparisonProps> = ({ plane
 };
 
 // Color Legend Component
+const LEGEND_ITEMS: Array<{ hue: string; name: string; range: string; note: string }> = [
+  { hue: PLANET_TYPE_RAMP.earth, name: 'Earth-like', range: '< 1.25 R⊕', note: 'Rocky planets' },
+  { hue: PLANET_TYPE_RAMP.superEarth, name: 'Super-Earth', range: '1.25 – 2.0 R⊕', note: 'Large rocky' },
+  { hue: PLANET_TYPE_RAMP.miniNeptune, name: 'Mini-Neptune', range: '2.0 – 4.0 R⊕', note: 'Gas envelope' },
+  { hue: PLANET_TYPE_RAMP.neptune, name: 'Neptune-like', range: '4.0 – 10.0 R⊕', note: 'Ice giant' },
+  { hue: PLANET_TYPE_RAMP.jupiter, name: 'Jupiter-like', range: '> 10.0 R⊕', note: 'Gas giant' },
+];
+
 const PlanetSizeLegend: React.FC = () => (
-  <div className="mt-6 pt-6 border-t border-green-200/50 dark:border-green-700/50">
-    <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 text-center">
-      <i className="fas fa-palette mr-2"></i>Planet Type Classification
+  <div className="mt-6 pt-6 border-t border-hairline">
+    <h3 className="text-eyebrow uppercase text-ink-tertiary mb-4 text-center">
+      Planet Type Classification
     </h3>
     <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-4xl mx-auto">
-      <div className="flex flex-col items-center p-3 bg-white/50 dark:bg-gray-700/30 rounded-lg">
-        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/50 shadow-md mb-2"></div>
-        <p className="text-xs font-bold text-gray-800 dark:text-gray-200">Earth-like</p>
-        <p className="text-xs text-gray-600 dark:text-gray-400">&lt; 1.25 R⊕</p>
-        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 text-center">Rocky planets</p>
-      </div>
-      
-      <div className="flex flex-col items-center p-3 bg-white/50 dark:bg-gray-700/30 rounded-lg">
-        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 shadow-green-500/50 shadow-md mb-2"></div>
-        <p className="text-xs font-bold text-gray-800 dark:text-gray-200">Super-Earth</p>
-        <p className="text-xs text-gray-600 dark:text-gray-400">1.25 - 2.0 R⊕</p>
-        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 text-center">Large rocky</p>
-      </div>
-      
-      <div className="flex flex-col items-center p-3 bg-white/50 dark:bg-gray-700/30 rounded-lg">
-        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 shadow-cyan-500/50 shadow-md mb-2"></div>
-        <p className="text-xs font-bold text-gray-800 dark:text-gray-200">Mini-Neptune</p>
-        <p className="text-xs text-gray-600 dark:text-gray-400">2.0 - 4.0 R⊕</p>
-        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 text-center">Gas envelope</p>
-      </div>
-      
-      <div className="flex flex-col items-center p-3 bg-white/50 dark:bg-gray-700/30 rounded-lg">
-        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 shadow-indigo-500/50 shadow-md mb-2"></div>
-        <p className="text-xs font-bold text-gray-800 dark:text-gray-200">Neptune-like</p>
-        <p className="text-xs text-gray-600 dark:text-gray-400">4.0 - 10.0 R⊕</p>
-        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 text-center">Ice giant</p>
-      </div>
-      
-      <div className="flex flex-col items-center p-3 bg-white/50 dark:bg-gray-700/30 rounded-lg">
-        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-red-600 shadow-orange-500/50 shadow-md mb-2"></div>
-        <p className="text-xs font-bold text-gray-800 dark:text-gray-200">Jupiter-like</p>
-        <p className="text-xs text-gray-600 dark:text-gray-400">&gt; 10.0 R⊕</p>
-        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 text-center">Gas giant</p>
-      </div>
+      {LEGEND_ITEMS.map((item) => (
+        <div key={item.name} className="flex flex-col items-center p-3 bg-surface border border-hairline rounded-card">
+          <div className="w-6 h-6 rounded-full border border-white/10 mb-2" style={sphereStyle(item.hue)}></div>
+          <p className="text-xs font-medium text-ink">{item.name}</p>
+          <p className="font-mono text-xs text-ink-secondary tabular-nums">{item.range}</p>
+          <p className="text-xs text-ink-tertiary mt-1 text-center">{item.note}</p>
+        </div>
+      ))}
     </div>
-    <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">
-      <i className="fas fa-info-circle mr-1"></i>
+    <p className="text-xs text-ink-tertiary text-center mt-4">
+      <i className="fas fa-info-circle mr-1 text-stellar-400"></i>
       R⊕ = Earth Radii (1 R⊕ = 6,371 km)
     </p>
   </div>
@@ -160,13 +160,13 @@ const OrbitalPeriodChart: React.FC<OrbitalPeriodChartProps> = ({ planets, dataTy
       }
     }).filter(p => p > 0);
 
-    // Define bins
+    // Define bins — ordered period buckets on a stellar→nebula sequential ramp
     const bins = [
-      { min: 0, max: 10, label: '0-10d', color: 'from-blue-500 to-cyan-500' },
-      { min: 10, max: 50, label: '10-50d', color: 'from-purple-500 to-pink-500' },
-      { min: 50, max: 100, label: '50-100d', color: 'from-indigo-500 to-purple-500' },
-      { min: 100, max: 365, label: '100-365d', color: 'from-violet-500 to-fuchsia-500' },
-      { min: 365, max: Infinity, label: '>365d', color: 'from-pink-500 to-rose-500' }
+      { min: 0, max: 10, label: '0-10d', color: 'from-stellar-500 to-stellar-300' },
+      { min: 10, max: 50, label: '10-50d', color: 'from-stellar-600 to-stellar-400' },
+      { min: 50, max: 100, label: '50-100d', color: 'from-nebula-500 to-nebula-300' },
+      { min: 100, max: 365, label: '100-365d', color: 'from-nebula-600 to-nebula-400' },
+      { min: 365, max: Infinity, label: '>365d', color: 'from-nebula-700 to-nebula-500' }
     ];
 
     // Count planets in each bin
@@ -178,28 +178,28 @@ const OrbitalPeriodChart: React.FC<OrbitalPeriodChartProps> = ({ planets, dataTy
     const maxCount = Math.max(...binData.map(b => b.count), 1);
 
     return (
-      <div className="h-80 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-6 border border-purple-200/30 dark:border-purple-700/30">
+      <div className="h-80 bg-void-900/30 rounded-card p-6 border border-hairline">
         <div className="h-64 flex items-end justify-between space-x-2 mb-4">
           {binData.map((bar, idx) => {
             const heightPercentage = maxCount > 0 ? (bar.count / maxCount) * 100 : 0;
-            
+
             return (
               <div key={idx} className="flex-1 flex flex-col justify-end items-center group h-full">
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-t-xl overflow-hidden relative transition-all duration-300 group-hover:shadow-lg" style={{ height: `${Math.max(heightPercentage, 5)}%` }}>
-                  <div className={`absolute inset-0 bg-gradient-to-t ${bar.color} transition-all duration-500 group-hover:scale-105`}></div>
+                <div className="w-full bg-surface-sunken border border-hairline rounded-t-md overflow-hidden relative" style={{ height: `${Math.max(heightPercentage, 5)}%` }}>
+                  <div className={`absolute inset-0 bg-gradient-to-t ${bar.color}`}></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm drop-shadow-md">{bar.count}</span>
+                    <span className="font-mono text-white text-sm tabular-nums drop-shadow-[0_1px_2px_rgba(4,6,13,0.85)]">{bar.count}</span>
                   </div>
                 </div>
-                <div className="mt-2 text-xs font-semibold text-gray-700 dark:text-gray-300">{bar.label}</div>
+                <div className="mt-2 font-mono text-xs text-ink-tertiary tabular-nums">{bar.label}</div>
               </div>
             );
           })}
         </div>
         <div className="text-center">
-          <p className="text-xs text-gray-600 dark:text-gray-400">
-            <i className="fas fa-info-circle mr-1"></i>
-            Showing distribution of {periods.length} exoplanet{periods.length !== 1 ? 's' : ''} with orbital period data
+          <p className="text-xs text-ink-tertiary">
+            <i className="fas fa-info-circle mr-1 text-stellar-400"></i>
+            Showing distribution of <span className="font-mono text-ink-secondary tabular-nums">{periods.length}</span> exoplanet{periods.length !== 1 ? 's' : ''} with orbital period data
           </p>
         </div>
       </div>
@@ -208,30 +208,30 @@ const OrbitalPeriodChart: React.FC<OrbitalPeriodChartProps> = ({ planets, dataTy
 
   // Default mock data when no planets are provided
   return (
-    <div className="h-80 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-6 border border-purple-200/30 dark:border-purple-700/30">
+    <div className="h-80 bg-void-900/30 rounded-card p-6 border border-hairline">
       <div className="h-64 flex items-end justify-between space-x-2 mb-4">
         {[
-          { heightPercent: 25, count: 342, label: '0-10d', color: 'from-blue-500 to-cyan-500' },
-          { heightPercent: 60, count: 1243, label: '10-50d', color: 'from-purple-500 to-pink-500' },
-          { heightPercent: 45, count: 856, label: '50-100d', color: 'from-indigo-500 to-purple-500' },
-          { heightPercent: 30, count: 523, label: '100-365d', color: 'from-violet-500 to-fuchsia-500' },
-          { heightPercent: 15, count: 187, label: '>365d', color: 'from-pink-500 to-rose-500' }
+          { heightPercent: 25, count: 342, label: '0-10d', color: 'from-stellar-500 to-stellar-300' },
+          { heightPercent: 60, count: 1243, label: '10-50d', color: 'from-stellar-600 to-stellar-400' },
+          { heightPercent: 45, count: 856, label: '50-100d', color: 'from-nebula-500 to-nebula-300' },
+          { heightPercent: 30, count: 523, label: '100-365d', color: 'from-nebula-600 to-nebula-400' },
+          { heightPercent: 15, count: 187, label: '>365d', color: 'from-nebula-700 to-nebula-500' }
         ].map((bar, idx) => (
           <div key={idx} className="flex-1 flex flex-col justify-end items-center group h-full">
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-t-xl overflow-hidden relative transition-all duration-300 group-hover:shadow-lg" style={{ height: `${bar.heightPercent}%` }}>
-              <div className={`absolute inset-0 bg-gradient-to-t ${bar.color} transition-all duration-500 group-hover:scale-105`}></div>
+            <div className="w-full bg-surface-sunken border border-hairline rounded-t-md overflow-hidden relative" style={{ height: `${bar.heightPercent}%` }}>
+              <div className={`absolute inset-0 bg-gradient-to-t ${bar.color}`}></div>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-white font-bold text-sm drop-shadow-md">{bar.count}</span>
+                <span className="font-mono text-white text-sm tabular-nums drop-shadow-[0_1px_2px_rgba(4,6,13,0.85)]">{bar.count}</span>
               </div>
             </div>
-            <div className="mt-2 text-xs font-semibold text-gray-700 dark:text-gray-300">{bar.label}</div>
+            <div className="mt-2 font-mono text-xs text-ink-tertiary tabular-nums">{bar.label}</div>
           </div>
         ))}
       </div>
       <div className="text-center">
-        <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-          <i className="fas fa-star mr-1"></i>
-          Example data - select exoplanets from Predictions or Exoplanets page to see real data
+        <p className="text-xs text-ink-tertiary italic">
+          <i className="fas fa-star mr-1 text-nebula-400"></i>
+          Example data — select exoplanets from Predictions or Exoplanets page to see real data
         </p>
       </div>
     </div>
@@ -274,11 +274,11 @@ const DiscoveryMethodChart: React.FC<DiscoveryMethodChartProps> = ({ planets, da
 
     const total = planets.length;
     const methodData = [
-      { method: 'Transit', count: methods['Transit'], color: 'bg-gradient-to-r from-blue-500 to-cyan-500' },
-      { method: 'Radial Velocity', count: methods['Radial Velocity'], color: 'bg-gradient-to-r from-purple-500 to-pink-500' },
-      { method: 'Imaging', count: methods['Imaging'], color: 'bg-gradient-to-r from-green-500 to-emerald-500' },
-      { method: 'Microlensing', count: methods['Microlensing'], color: 'bg-gradient-to-r from-orange-500 to-red-500' },
-      { method: 'Other', count: methods['Other'], color: 'bg-gradient-to-r from-gray-500 to-gray-600' }
+      { method: 'Transit', count: methods['Transit'], color: 'bg-gradient-to-r from-stellar-500 to-stellar-400' },
+      { method: 'Radial Velocity', count: methods['Radial Velocity'], color: 'bg-gradient-to-r from-nebula-500 to-nebula-400' },
+      { method: 'Imaging', count: methods['Imaging'], color: 'bg-gradient-to-r from-stellar-600 to-stellar-500' },
+      { method: 'Microlensing', count: methods['Microlensing'], color: 'bg-gradient-to-r from-nebula-600 to-nebula-500' },
+      { method: 'Other', count: methods['Other'], color: 'bg-ink-tertiary' }
     ]
       .filter(item => item.count > 0)
       .map(item => ({
@@ -287,20 +287,20 @@ const DiscoveryMethodChart: React.FC<DiscoveryMethodChartProps> = ({ planets, da
       }));
 
     return (
-      <div className="h-80 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200/30 dark:border-blue-700/30">
+      <div className="h-80 bg-void-900/30 rounded-card p-6 border border-hairline">
         <div className="space-y-4">
           {methodData.map((item, idx) => (
             <div key={idx} className="group">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{item.method}</span>
+                <span className="text-sm font-medium text-ink">{item.method}</span>
                 <div className="flex items-center gap-3">
-                  <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">{item.count} planet{item.count !== 1 ? 's' : ''}</span>
-                  <span className="text-sm font-bold text-purple-600 dark:text-purple-400">{item.percentage}%</span>
+                  <span className="font-mono text-xs text-ink-tertiary tabular-nums">{item.count} planet{item.count !== 1 ? 's' : ''}</span>
+                  <span className="font-mono text-sm font-semibold text-stellar-300 tabular-nums">{item.percentage}%</span>
                 </div>
               </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
+              <div className="progress-track h-2.5">
                 <div
-                  className={`h-full ${item.color} transition-all duration-700 group-hover:scale-105 origin-left shadow-lg`}
+                  className={`h-full rounded-pill ${item.color} origin-left`}
                   style={{ width: `${item.percentage}%` }}
                 ></div>
               </div>
@@ -308,9 +308,9 @@ const DiscoveryMethodChart: React.FC<DiscoveryMethodChartProps> = ({ planets, da
           ))}
         </div>
         <div className="mt-6 text-center">
-          <p className="text-xs text-gray-600 dark:text-gray-400">
-            <i className="fas fa-info-circle mr-1"></i>
-            Showing discovery methods for {total} exoplanet{total !== 1 ? 's' : ''}
+          <p className="text-xs text-ink-tertiary">
+            <i className="fas fa-info-circle mr-1 text-stellar-400"></i>
+            Showing discovery methods for <span className="font-mono text-ink-secondary tabular-nums">{total}</span> exoplanet{total !== 1 ? 's' : ''}
           </p>
         </div>
       </div>
@@ -319,26 +319,26 @@ const DiscoveryMethodChart: React.FC<DiscoveryMethodChartProps> = ({ planets, da
 
   // Default mock data when no planets are provided
   return (
-    <div className="h-80 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200/30 dark:border-blue-700/30">
+    <div className="h-80 bg-void-900/30 rounded-card p-6 border border-hairline">
       <div className="space-y-4">
         {[
-          { method: 'Transit', percentage: 76, count: 3821, color: 'bg-gradient-to-r from-blue-500 to-cyan-500' },
-          { method: 'Radial Velocity', percentage: 15, count: 753, color: 'bg-gradient-to-r from-purple-500 to-pink-500' },
-          { method: 'Imaging', percentage: 5, count: 251, color: 'bg-gradient-to-r from-green-500 to-emerald-500' },
-          { method: 'Microlensing', percentage: 3, count: 151, color: 'bg-gradient-to-r from-orange-500 to-red-500' },
-          { method: 'Other', percentage: 1, count: 50, color: 'bg-gradient-to-r from-gray-500 to-gray-600' }
+          { method: 'Transit', percentage: 76, count: 3821, color: 'bg-gradient-to-r from-stellar-500 to-stellar-400' },
+          { method: 'Radial Velocity', percentage: 15, count: 753, color: 'bg-gradient-to-r from-nebula-500 to-nebula-400' },
+          { method: 'Imaging', percentage: 5, count: 251, color: 'bg-gradient-to-r from-stellar-600 to-stellar-500' },
+          { method: 'Microlensing', percentage: 3, count: 151, color: 'bg-gradient-to-r from-nebula-600 to-nebula-500' },
+          { method: 'Other', percentage: 1, count: 50, color: 'bg-ink-tertiary' }
         ].map((item, idx) => (
           <div key={idx} className="group">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{item.method}</span>
+              <span className="text-sm font-medium text-ink">{item.method}</span>
               <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">{item.count} planets</span>
-                <span className="text-sm font-bold text-purple-600 dark:text-purple-400">{item.percentage}%</span>
+                <span className="font-mono text-xs text-ink-tertiary tabular-nums">{item.count} planets</span>
+                <span className="font-mono text-sm font-semibold text-stellar-300 tabular-nums">{item.percentage}%</span>
               </div>
             </div>
-            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4 overflow-hidden">
+            <div className="progress-track h-2.5">
               <div
-                className={`h-full ${item.color} transition-all duration-700 group-hover:scale-105 origin-left shadow-lg`}
+                className={`h-full rounded-pill ${item.color} origin-left`}
                 style={{ width: `${item.percentage}%` }}
               ></div>
             </div>
@@ -346,9 +346,9 @@ const DiscoveryMethodChart: React.FC<DiscoveryMethodChartProps> = ({ planets, da
         ))}
       </div>
       <div className="mt-6 text-center">
-        <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-          <i className="fas fa-star mr-1"></i>
-          Example data - select exoplanets to see real discovery method data
+        <p className="text-xs text-ink-tertiary italic">
+          <i className="fas fa-star mr-1 text-nebula-400"></i>
+          Example data — select exoplanets to see real discovery method data
         </p>
       </div>
     </div>
@@ -419,10 +419,10 @@ const StarTypeChart: React.FC<StarTypeChartProps> = ({ planets, dataType }) => {
 
   if (totalStars === 0) {
     return (
-      <div className="h-80 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-6 border border-amber-200/30 dark:border-amber-700/30 flex items-center justify-center">
-        <div className="text-center text-gray-500 dark:text-gray-400">
+      <div className="h-80 bg-void-900/30 rounded-card p-6 border border-hairline flex items-center justify-center">
+        <div className="text-center text-ink-tertiary">
           <i className="fas fa-star text-6xl mb-4 opacity-30"></i>
-          <p className="text-lg font-semibold">No star data available</p>
+          <p className="text-lg font-medium text-ink-secondary">No star data available</p>
           <p className="text-sm mt-2">Select exoplanets to analyze their host stars</p>
         </div>
       </div>
@@ -430,13 +430,13 @@ const StarTypeChart: React.FC<StarTypeChartProps> = ({ planets, dataType }) => {
   }
 
   return (
-    <div className="h-80 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-6 border border-amber-200/30 dark:border-amber-700/30 flex items-center justify-center relative overflow-hidden">
+    <div className="h-80 bg-void-900/30 rounded-card p-6 border border-hairline flex items-center justify-center relative overflow-hidden">
       {/* Animated background stars */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(20)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 bg-amber-300/30 dark:bg-amber-400/20 rounded-full animate-pulse"
+            className="absolute w-1 h-1 bg-stellar-400/25 rounded-full animate-pulse"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -449,8 +449,8 @@ const StarTypeChart: React.FC<StarTypeChartProps> = ({ planets, dataType }) => {
 
       <div className="relative w-64 h-64 group">
         {/* Outer glow ring */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-400/20 via-orange-400/20 to-yellow-400/20 blur-xl animate-pulse"></div>
-        
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-stellar-400/10 via-nebula-500/10 to-stellar-400/10 blur-xl animate-pulse"></div>
+
         {/* Donut chart segments with animation */}
         <svg viewBox="0 0 100 100" className="transform -rotate-90 transition-transform duration-700 group-hover:rotate-[6deg] group-hover:scale-105">
           {/* Background circle */}
@@ -461,7 +461,7 @@ const StarTypeChart: React.FC<StarTypeChartProps> = ({ planets, dataType }) => {
             fill="none"
             stroke="currentColor"
             strokeWidth="20"
-            className="text-gray-200 dark:text-gray-700 opacity-20"
+            className="text-void-500 opacity-40"
           />
           
           {segmentsWithPositions.map((segment, idx) => {
@@ -504,14 +504,14 @@ const StarTypeChart: React.FC<StarTypeChartProps> = ({ planets, dataType }) => {
         {/* Center text with animation */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="text-center animate-[fadeIn_0.8s_ease-out]">
-            <div className="text-4xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-yellow-600 bg-clip-text text-transparent drop-shadow-lg animate-pulse">
+            <div className="font-mono text-4xl font-semibold text-stellar-300 tabular-nums">
               {totalStars}
             </div>
-            <div className="text-xs font-bold text-gray-600 dark:text-gray-400 mt-1 tracking-wider uppercase">
+            <div className="text-eyebrow text-ink-tertiary mt-1 uppercase">
               {totalStars === 1 ? 'Star' : 'Stars'}
             </div>
             <div className="mt-2">
-              <i className="fas fa-star text-amber-500 dark:text-amber-400 text-sm animate-spin" style={{ animationDuration: '3s' }}></i>
+              <i className="fas fa-star text-stellar-300 text-sm animate-spin" style={{ animationDuration: '3s' }}></i>
             </div>
           </div>
         </div>
@@ -526,48 +526,46 @@ const StarTypeChart: React.FC<StarTypeChartProps> = ({ planets, dataType }) => {
             stroke="currentColor"
             strokeWidth="0.5"
             strokeDasharray="2 4"
-            className="text-amber-400/30 dark:text-amber-500/20"
+            className="text-stellar-400/25"
           />
         </svg>
       </div>
 
       {/* Legend with animations */}
-      <div className="ml-8 space-y-2 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-amber-400/30 scrollbar-track-transparent">
+      <div className="ml-8 space-y-2 max-h-64 overflow-y-auto pr-2 themed-scrollbar">
         {segmentsWithPositions.map((item, idx) => {
           const colorClass = item.color.startsWith('#') ? '' : item.color;
           return (
-          <div 
-            key={idx} 
-            className="flex items-center gap-3 group cursor-pointer p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/30 transition-all duration-300 animate-[slideInRight_0.5s_ease-out]"
+          <div
+            key={idx}
+            className="flex items-center gap-3 group cursor-pointer p-2 rounded-control hover:bg-surface-raised transition-colors duration-300 animate-[slideInRight_0.5s_ease-out]"
             style={{ animationDelay: `${idx * 0.1}s` }}
           >
             <div className="relative">
-              {/* Pulsing glow behind the color indicator */}
+              {/* Soft glow behind the color indicator (spectral hue) */}
               <div
                 className="absolute inset-0 rounded-full blur-sm transition-all duration-300 group-hover:blur-md group-hover:scale-150"
                 style={{ backgroundColor: item.color, opacity: 0.3 }}
               ></div>
               <div
-                className={`w-5 h-5 rounded-full shadow-lg transition-all duration-300 group-hover:scale-125 group-hover:rotate-[360deg] relative z-10 ${colorClass}`}
+                className={`w-4 h-4 rounded-full border border-white/15 transition-transform duration-300 group-hover:scale-125 relative z-10 ${colorClass}`}
                 {...(item.color.startsWith('#') && { style: { backgroundColor: item.color } })}
-              >
-                <div className="absolute inset-0 rounded-full bg-white/20 animate-pulse"></div>
-              </div>
+              ></div>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-bold text-gray-800 dark:text-gray-200 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                <span className="text-sm font-medium text-ink group-hover:text-stellar-300 transition-colors">
                   {item.type}
                 </span>
-                <span className="text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700/50 px-2 py-0.5 rounded-full">
+                <span className="font-mono text-xs text-ink-secondary bg-surface border border-hairline px-2 py-0.5 rounded-pill tabular-nums">
                   {item.count} · {item.percent.toFixed(1)}%
                 </span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+              <p className="text-xs text-ink-tertiary mt-0.5 transition-colors">
                 {item.description}
               </p>
             </div>
-            <i className="fas fa-chevron-right text-amber-400 dark:text-amber-500 text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1"></i>
+            <i className="fas fa-chevron-right text-stellar-400 text-xs opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1"></i>
           </div>
         );})}
       </div>
@@ -671,19 +669,20 @@ const Visualizations: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-br from-gray-50 via-purple-50/30 to-pink-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 min-h-screen transition-colors duration-200">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-6 min-h-screen">
+      <div className="flex justify-between items-center mb-8 gap-4 flex-wrap">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-2">
-            <i className="fas fa-chart-line mr-3 text-purple-600 dark:text-purple-400"></i>Exoplanet Visualizations
+          <p className="text-eyebrow uppercase text-stellar-400 mb-2">Observatory</p>
+          <h1 className="font-display text-display-lg font-semibold gradient-text mb-2">
+            Exoplanet Visualizations
           </h1>
-          <p className="text-gray-700 dark:text-gray-300 font-medium">Interactive charts and 3D visualizations of exoplanet data</p>
+          <p className="text-ink-secondary">Interactive charts and 3D visualizations of exoplanet data</p>
         </div>
         {!hasSelection && (
           <button
             type="button"
             onClick={() => setShowExamples(!showExamples)}
-            className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 dark:from-indigo-600 dark:to-purple-600 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 dark:hover:from-indigo-700 dark:hover:to-purple-700 transition-all duration-300 font-bold flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
+            className="btn-space btn-secondary"
           >
             <i className={`fas ${showExamples ? 'fa-eye-slash' : 'fa-star'}`}></i>
             <span>{showExamples ? 'Hide Examples' : 'Show Example Exoplanets'}</span>
@@ -694,21 +693,22 @@ const Visualizations: React.FC = () => {
       {/* Multiple Exoplanets 3D Visualization */}
       {isMultipleMode && dataType && (
         <div className="mb-8">
-          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl p-8 mb-6 border border-purple-300/50">
-            <div className="flex justify-between items-center">
+          <div className="glass rounded-panel bg-nebula-veil p-8 mb-6">
+            <div className="flex justify-between items-center gap-4 flex-wrap">
               <div>
-                <h2 className="text-3xl font-bold text-white flex items-center gap-3">
-                  <i className="fas fa-layer-group"></i>
+                <p className="text-eyebrow uppercase text-stellar-400 mb-2">Selected Systems</p>
+                <h2 className="font-display text-2xl font-semibold text-ink flex items-center gap-3">
+                  <i className="fas fa-layer-group text-nebula-400 text-xl"></i>
                   Your Selected Exoplanet Systems
                 </h2>
-                <p className="text-indigo-100 mt-2 text-lg font-medium">
-                  <i className="fas fa-globe mr-2"></i>Comparing {selectedExoplanets.length} exoplanets in 3D
+                <p className="text-ink-secondary mt-2">
+                  Comparing <span className="font-mono text-stellar-300 tabular-nums">{selectedExoplanets.length}</span> exoplanets in 3D
                 </p>
               </div>
               <button
                 type="button"
                 onClick={clearAllExoplanets}
-                className="px-6 py-3 bg-white text-indigo-600 rounded-xl hover:bg-indigo-50 transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2"
+                className="btn-space btn-secondary"
               >
                 <i className="fas fa-times-circle"></i>
                 <span>Clear All</span>
@@ -716,7 +716,7 @@ const Visualizations: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-white to-purple-50/20 dark:from-gray-800 dark:to-gray-800/50 p-8 rounded-2xl shadow-2xl border-2 border-purple-400/50 dark:border-purple-600/50 backdrop-blur-sm cursor-move">
+          <div className="glass rounded-panel p-6 cursor-move">
             <ExoplanetVisualization3D
               data={selectedExoplanets[0]}
               dataType={dataType}
@@ -729,25 +729,28 @@ const Visualizations: React.FC = () => {
       {/* Single Exoplanet 3D Visualization */}
       {selectedExoplanet && !isMultipleMode && dataType && (
         <div className="mb-8">
-          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl shadow-2xl p-8 mb-6 border border-purple-300/50">
-            <div className="flex justify-between items-center">
+          <div className="glass rounded-panel bg-nebula-veil p-8 mb-6">
+            <div className="flex justify-between items-center gap-4 flex-wrap">
               <div>
-                <h2 className="text-3xl font-bold text-white flex items-center gap-3">
-                  <i className="fas fa-planet-ringed"></i>
+                <p className="text-eyebrow uppercase text-stellar-400 mb-2">Selected System</p>
+                <h2 className="font-display text-2xl font-semibold text-ink flex items-center gap-3">
+                  <i className="fas fa-planet-ringed text-nebula-400 text-xl"></i>
                   Your Selected Exoplanet System
                 </h2>
-                <p className="text-indigo-100 mt-2 text-lg font-medium">
-                  <i className="fas fa-star mr-2"></i>
-                  {dataType === 'kepler'
-                    ? selectedExoplanet.kepler_name || `KOI-${selectedExoplanet.kepid}`
-                    : selectedExoplanet.pl_name || `TOI-${selectedExoplanet.toi_id}`
-                  }
+                <p className="text-ink-secondary mt-2 flex items-center gap-2">
+                  <i className="fas fa-star text-stellar-400"></i>
+                  <span className="font-mono text-ink">
+                    {dataType === 'kepler'
+                      ? selectedExoplanet.kepler_name || `KOI-${selectedExoplanet.kepid}`
+                      : selectedExoplanet.pl_name || `TOI-${selectedExoplanet.toi_id}`
+                    }
+                  </span>
                 </p>
               </div>
               <button
                 type="button"
                 onClick={clearSelectedExoplanet}
-                className="px-6 py-3 bg-white text-indigo-600 rounded-xl hover:bg-indigo-50 transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2"
+                className="btn-space btn-secondary"
               >
                 <i className="fas fa-times-circle"></i>
                 <span>Clear Selection</span>
@@ -755,7 +758,7 @@ const Visualizations: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-white to-purple-50/20 dark:from-gray-800 dark:to-gray-800/50 p-8 rounded-2xl shadow-2xl border-2 border-purple-400/50 dark:border-purple-600/50 backdrop-blur-sm cursor-move">
+          <div className="glass rounded-panel p-6 cursor-move">
             <ExoplanetVisualization3D data={selectedExoplanet} dataType={dataType} />
           </div>
         </div>
@@ -764,16 +767,16 @@ const Visualizations: React.FC = () => {
       {/* Example Exoplanets */}
       {showExamples && !hasSelection && (
         <div className="mb-8 space-y-6">
-          <div className="bg-gradient-to-br from-white to-blue-50/30 dark:from-gray-800 dark:to-blue-900/20 p-8 rounded-2xl shadow-2xl border-2 border-blue-400/50 dark:border-blue-600/50 backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-6">
+          <div className="glass rounded-panel p-8">
+            <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
               <div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent flex items-center gap-2">
-                  <i className="fas fa-rocket text-blue-600 dark:text-blue-400"></i>
-                  TOI-700 d - Potentially Habitable
+                <p className="text-eyebrow uppercase text-ink-tertiary mb-2">TESS Mission Discovery</p>
+                <h2 className="font-display text-xl font-semibold text-ink flex items-center gap-2.5">
+                  <i className="fas fa-rocket text-stellar-400 text-base"></i>
+                  TOI-700 d — Potentially Habitable
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">TESS Mission Discovery</p>
               </div>
-              <span className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl text-sm font-bold shadow-lg">
+              <span className="px-3.5 py-1.5 bg-stellar-400/12 text-stellar-300 border border-stellar-400/25 rounded-pill text-sm font-medium">
                 <i className="fas fa-satellite mr-2"></i>TESS
               </span>
             </div>
@@ -782,16 +785,16 @@ const Visualizations: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-white to-purple-50/30 dark:from-gray-800 dark:to-purple-900/20 p-8 rounded-2xl shadow-2xl border-2 border-purple-400/50 dark:border-purple-600/50 backdrop-blur-sm">
-            <div className="flex items-center justify-between mb-6">
+          <div className="glass rounded-panel p-8">
+            <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
               <div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
-                  <i className="fas fa-globe text-purple-600 dark:text-purple-400"></i>
-                  Kepler-186 f - First Earth-sized in Habitable Zone
+                <p className="text-eyebrow uppercase text-ink-tertiary mb-2">Kepler Mission Discovery</p>
+                <h2 className="font-display text-xl font-semibold text-ink flex items-center gap-2.5">
+                  <i className="fas fa-globe text-nebula-400 text-base"></i>
+                  Kepler-186 f — First Earth-sized in Habitable Zone
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 font-medium">Kepler Mission Discovery</p>
               </div>
-              <span className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl text-sm font-bold shadow-lg">
+              <span className="px-3.5 py-1.5 bg-nebula-500/14 text-nebula-300 border border-nebula-400/25 rounded-pill text-sm font-medium">
                 <i className="fas fa-telescope mr-2"></i>Kepler
               </span>
             </div>
@@ -804,20 +807,20 @@ const Visualizations: React.FC = () => {
 
       {/* Placeholder message when no exoplanet is selected */}
       {!hasSelection && !showExamples && (
-        <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-16 text-center mb-8 border border-purple-200/50 dark:border-purple-700/50 backdrop-blur-sm shadow-xl">
-          <div className="text-purple-400 dark:text-purple-500 mb-6">
+        <div className="glass rounded-panel bg-nebula-veil p-16 text-center mb-8">
+          <div className="text-nebula-400/70 mb-6">
             <i className="fas fa-rocket text-8xl"></i>
           </div>
-          <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+          <h3 className="font-display text-2xl font-semibold gradient-text mb-4">
             No Exoplanet Selected
           </h3>
-          <p className="text-gray-700 dark:text-gray-300 mb-8 text-lg font-medium max-w-2xl mx-auto">
-            Navigate to the <span className="text-purple-600 dark:text-purple-400 font-bold">Exoplanets</span> page to select exoplanets and visualize them in stunning 3D
+          <p className="text-ink-secondary mb-8 max-w-2xl mx-auto">
+            Navigate to the <span className="text-stellar-300 font-medium">Exoplanets</span> page to select exoplanets and visualize them in 3D
           </p>
           <div className="flex gap-4 justify-center">
             <button
               onClick={() => setShowExamples(true)}
-              className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-2"
+              className="btn-space btn-primary"
             >
               <i className="fas fa-star"></i>
               <span>Show Example Exoplanets</span>
@@ -828,24 +831,24 @@ const Visualizations: React.FC = () => {
 
       {/* Planet Size Comparison */}
       <div className="mb-8">
-        <div className="bg-gradient-to-br from-white to-green-50/30 dark:from-gray-800 dark:to-green-900/20 rounded-2xl shadow-xl overflow-hidden border border-green-200/50 dark:border-green-700/50 backdrop-blur-sm planet-size-comparison-container">
-          <div className="p-6 border-b border-green-200/50 dark:border-green-700/50 bg-gradient-to-r from-green-50/50 to-emerald-50/50 dark:from-green-900/20 dark:to-emerald-900/20">
-            <div className="flex justify-between items-start">
+        <div className="glass rounded-panel overflow-hidden planet-size-comparison-container">
+          <div className="p-6 border-b border-hairline">
+            <div className="flex justify-between items-start gap-4 flex-wrap">
               <div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent flex items-center gap-2">
-                  <i className="fas fa-balance-scale text-green-600 dark:text-green-400"></i>
+                <h2 className="font-display text-xl font-semibold text-ink flex items-center gap-2.5">
+                  <i className="fas fa-balance-scale text-stellar-400 text-base"></i>
                   Planet Size Comparison
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {hasSelection 
-                    ? 'Compare your analyzed exoplanet sizes to Earth' 
+                <p className="text-sm text-ink-tertiary mt-1">
+                  {hasSelection
+                    ? 'Compare your analyzed exoplanet sizes to Earth'
                     : 'Compare exoplanet sizes to planets in our solar system'}
                 </p>
               </div>
               <button
                 onClick={downloadPlanetSizeImage}
                 disabled={downloadingImage}
-                className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2 text-sm"
+                className="btn-space btn-secondary text-sm disabled:opacity-40 disabled:cursor-not-allowed"
                 title="Download as PNG image"
               >
                 {downloadingImage ? (
@@ -862,7 +865,7 @@ const Visualizations: React.FC = () => {
               </button>
             </div>
           </div>
-          <div className="p-10 bg-gradient-to-br from-green-50/30 to-emerald-50/30 dark:from-green-900/10 dark:to-emerald-900/10">
+          <div className="p-10 bg-void-900/20">
             {hasSelection ? (
               // Dynamic comparison with analyzed planets
               <>
@@ -897,10 +900,10 @@ const Visualizations: React.FC = () => {
               // Static examples when no planets selected
               <>
                 <div className="flex items-end justify-center h-72 gap-8">
-                  <PlanetCircle size="w-8 h-8" color="bg-gradient-to-br from-blue-400 to-blue-600 shadow-blue-500/50" name="Earth" radius={1.0} />
-                  <PlanetCircle size="w-16 h-16" color="bg-gradient-to-br from-orange-400 to-orange-600 shadow-orange-500/50" name="HD 209458 b" radius={1.38} />
-                  <PlanetCircle size="w-32 h-32" color="bg-gradient-to-br from-red-400 to-red-600 shadow-red-500/50" name="WASP-17b" radius={1.99} />
-                  <PlanetCircle size="w-6 h-6" color="bg-gradient-to-br from-green-400 to-emerald-600 shadow-green-500/50" name="TRAPPIST-1e" radius={0.92} />
+                  <PlanetCircle size="w-8 h-8" color={getPlanetHue(1.0)} name="Earth" radius={1.0} />
+                  <PlanetCircle size="w-16 h-16" color={getPlanetHue(1.38)} name="HD 209458 b" radius={1.38} />
+                  <PlanetCircle size="w-32 h-32" color={getPlanetHue(1.99)} name="WASP-17b" radius={1.99} />
+                  <PlanetCircle size="w-6 h-6" color={getPlanetHue(0.92)} name="TRAPPIST-1e" radius={0.92} />
                 </div>
                 <PlanetSizeLegend />
               </>
@@ -910,14 +913,14 @@ const Visualizations: React.FC = () => {
       </div>
       
       {/* Orbital Period Chart */}
-      <div className="bg-gradient-to-br from-white to-purple-50/30 dark:from-gray-800 dark:to-purple-900/20 rounded-2xl shadow-xl overflow-hidden border border-purple-200/50 dark:border-purple-700/50 backdrop-blur-sm mb-8">
-        <div className="p-6 border-b border-purple-200/50 dark:border-purple-700/50 bg-gradient-to-r from-purple-50/50 to-pink-50/50 dark:from-purple-900/20 dark:to-pink-900/20">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
-            <i className="fas fa-chart-bar text-purple-600 dark:text-purple-400"></i>
+      <div className="glass rounded-panel overflow-hidden mb-8">
+        <div className="p-6 border-b border-hairline">
+          <h2 className="font-display text-xl font-semibold text-ink flex items-center gap-2.5">
+            <i className="fas fa-chart-bar text-stellar-400 text-base"></i>
             Orbital Period Distribution
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            {hasSelection 
+          <p className="text-sm text-ink-tertiary mt-1">
+            {hasSelection
               ? `Distribution of orbital periods for your ${isMultipleMode ? selectedExoplanets.length : 'selected'} exoplanet${isMultipleMode && selectedExoplanets.length > 1 ? 's' : ''}`
               : 'Distribution of orbital periods for confirmed exoplanets'}
           </p>
@@ -932,14 +935,14 @@ const Visualizations: React.FC = () => {
       
       {/* Discovery Method Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-gradient-to-br from-white to-blue-50/30 dark:from-gray-800 dark:to-blue-900/20 rounded-2xl shadow-xl overflow-hidden border border-blue-200/50 dark:border-blue-700/50 backdrop-blur-sm">
-          <div className="p-6 border-b border-blue-200/50 dark:border-blue-700/50 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/20">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
-              <i className="fas fa-microscope text-blue-600 dark:text-blue-400"></i>
+        <div className="glass rounded-panel overflow-hidden">
+          <div className="p-6 border-b border-hairline">
+            <h2 className="font-display text-xl font-semibold text-ink flex items-center gap-2.5">
+              <i className="fas fa-microscope text-stellar-400 text-base"></i>
               Discovery Methods
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {hasSelection 
+            <p className="text-sm text-ink-tertiary mt-1">
+              {hasSelection
                 ? `Discovery methods for your ${isMultipleMode ? selectedExoplanets.length : 'selected'} exoplanet${isMultipleMode && selectedExoplanets.length > 1 ? 's' : ''}`
                 : 'Breakdown of exoplanet discovery methods'}
             </p>
@@ -953,33 +956,33 @@ const Visualizations: React.FC = () => {
         </div>
 
         {/* Star Type Distribution */}
-        <div className="bg-gradient-to-br from-white to-amber-50/30 dark:from-gray-800 dark:to-amber-900/20 rounded-2xl shadow-xl overflow-hidden border border-amber-200/50 dark:border-amber-700/50 backdrop-blur-sm">
-          <div className="p-6 border-b border-amber-200/50 dark:border-amber-700/50 bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-900/20">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent flex items-center gap-2">
-              <i className="fas fa-sun text-amber-600 dark:text-amber-400"></i>
+        <div className="glass rounded-panel overflow-hidden">
+          <div className="p-6 border-b border-hairline">
+            <h2 className="font-display text-xl font-semibold text-ink flex items-center gap-2.5">
+              <i className="fas fa-sun text-stellar-400 text-base"></i>
               Host Star Types
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {hasSelection 
-                ? 'Star type classification of your selected exoplanets' 
+            <p className="text-sm text-ink-tertiary mt-1">
+              {hasSelection
+                ? 'Star type classification of your selected exoplanets'
                 : 'Distribution of star types hosting confirmed exoplanets'}
             </p>
           </div>
           <div className="p-8">
             {hasSelection && dataType ? (
-              <StarTypeChart 
+              <StarTypeChart
                 planets={
-                  isMultipleMode 
-                    ? selectedExoplanets 
+                  isMultipleMode
+                    ? selectedExoplanets
                     : (selectedExoplanet ? [selectedExoplanet] : [])
                 }
                 dataType={dataType}
               />
             ) : (
-              <div className="h-80 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-6 border border-amber-200/30 dark:border-amber-700/30 flex items-center justify-center">
-                <div className="text-center text-gray-500 dark:text-gray-400">
+              <div className="h-80 bg-void-900/30 rounded-card p-6 border border-hairline flex items-center justify-center">
+                <div className="text-center text-ink-tertiary">
                   <i className="fas fa-star text-6xl mb-4 opacity-30"></i>
-                  <p className="text-lg font-semibold">No star data available</p>
+                  <p className="text-lg font-medium text-ink-secondary">No star data available</p>
                   <p className="text-sm mt-2">Select exoplanets from the Exoplanets page to analyze their host stars</p>
                 </div>
               </div>

@@ -5,9 +5,9 @@ const ThemeToggle: React.FC = () => {
   const { darkMode, toggleDarkMode } = useContext(ThemeContext);
 
   return (
-    <button 
+    <button
       onClick={toggleDarkMode}
-      className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+      className="grid h-10 w-10 place-items-center rounded-control border border-hairline bg-surface text-ink-secondary transition-colors duration-200 hover:border-stellar-400/40 hover:text-stellar-300"
       aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
     >
       {darkMode ? (

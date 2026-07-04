@@ -9,7 +9,7 @@ export default function Hero() {
 
   return (
     <div className="hero-container">
-      {/* Three.js Background */}
+      {/* Three.js starfield background */}
       <div className="hero-canvas">
         <Canvas
           camera={{ position: [0, 5, 15], fov: 60 }}
@@ -31,21 +31,28 @@ export default function Hero() {
       {/* Hero Content */}
       <div className="hero-content">
         <div className="hero-text-container">
+          {/* Telemetry eyebrow (mono, tracked) */}
+          <div className="hero-eyebrow">
+            <span className="hero-eyebrow-dot" aria-hidden="true"></span>
+            A World Away · Exoplanet AI
+          </div>
+
           <h1 className="hero-title">
-            <span className="hero-title-main">Discover the Universe</span>
-            <span className="hero-title-sub">Hunting for Exoplanets with AI</span>
+            <span className="hero-title-line">
+              <span className="hero-title-main">Discover the Universe</span>
+            </span>
+            <span className="hero-title-line">
+              <span className="hero-title-sub">Hunting for Exoplanets with AI</span>
+            </span>
           </h1>
 
           <p className="hero-description">
-            A bridge from data to discovery, with AI unlocking the secrets of worlds beyond our own.
+            A bridge from data to discovery, with AI unlocking the secrets of worlds beyond our own.
           </p>
 
-          <a
-            href="/dashboard/"
-            className="hero-cta-button"
-          >
+          <a href="/dashboard/" className="hero-cta-button">
             <span className="button-text">Explore Dashboard</span>
-            <i className="fa fa-rocket"></i>
+            <i className="fa-solid fa-rocket button-icon" aria-hidden="true"></i>
           </a>
 
           <div className="hero-stats">
@@ -53,12 +60,10 @@ export default function Hero() {
               <div className="stat-value">6,000+</div>
               <div className="stat-label">Exoplanets</div>
             </div>
-            <div className="stat-divider"></div>
             <div className="stat-item">
               <div className="stat-value">AI-Powered</div>
               <div className="stat-label">Classification</div>
             </div>
-            <div className="stat-divider"></div>
             <div className="stat-item">
               <div className="stat-value">Real-time</div>
               <div className="stat-label">Analysis</div>

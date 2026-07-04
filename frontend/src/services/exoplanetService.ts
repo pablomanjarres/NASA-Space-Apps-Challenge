@@ -4,6 +4,9 @@
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://grit-x-awa-1035421252747.europe-west1.run.app';
 
+// Key-free DEMO mode: return bundled sample rows instead of hitting the backend.
+import { isDemoMode, demoDatasetRows } from '../lib/demoFixtures';
+
 export interface AnalyzedExoplanet {
   id: number;
   job_id: string;
@@ -85,6 +88,23 @@ export interface ExoplanetStats {
 }
 
 class ExoplanetService {
+  /** Bundled sample rows shaped as AnalyzedExoplanet[] for DEMO mode. */
+  private demoAnalyzed(datasetType: 'kepler' | 'tess' = 'kepler'): AnalyzedExoplanet[] {
+    return demoDatasetRows(datasetType).map((row, i) => ({
+      id: i + 1,
+      job_id: 'demo-analyzed',
+      row_index: i,
+      dataset_type: datasetType,
+      predicted_class: String(row.koi_disposition || row.tfopwg_disp || 'CANDIDATE'),
+      confidence_score: typeof row.koi_score === 'number' ? row.koi_score : 0.85,
+      validated: true,
+      validation_status: 'matched',
+      stored_in_bucket: true,
+      created_at: new Date().toISOString(),
+      ...row,
+    })) as unknown as AnalyzedExoplanet[];
+  }
+
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
     const response = await fetch(url, {
@@ -118,6 +138,8 @@ class ExoplanetService {
     limit?: number;
     offset?: number;
   }): Promise<AnalyzedExoplanet[]> {
+    if (isDemoMode()) return this.demoAnalyzed(params?.dataset_type ?? 'kepler');
+
     const queryParams = new URLSearchParams();
     if (params?.dataset_type) queryParams.set('dataset_type', params.dataset_type);
     if (params?.validated !== undefined) queryParams.set('validated', String(params.validated));
@@ -140,6 +162,8 @@ class ExoplanetService {
     if (params?.dataset_type) queryParams.set('dataset_type', params.dataset_type);
     if (params?.limit) queryParams.set('limit', String(params.limit));
 
+    if (isDemoMode()) return this.demoAnalyzed(params?.dataset_type ?? 'kepler');
+
     const endpoint = `/api/v1/exoplanets/new-discoveries?${queryParams.toString()}`;
     return this.request<AnalyzedExoplanet[]>(endpoint);
   }
@@ -148,6 +172,7 @@ class ExoplanetService {
    * Get analyzed exoplanets by job ID
    */
   async getExoplanetsByJob(jobId: string): Promise<AnalyzedExoplanet[]> {
+    if (isDemoMode()) return this.demoAnalyzed('kepler').map((e) => ({ ...e, job_id: jobId }));
     return this.request<AnalyzedExoplanet[]>(`/api/v1/exoplanets/job/${jobId}`);
   }
 
@@ -155,6 +180,10 @@ class ExoplanetService {
    * Get a specific analyzed exoplanet by ID
    */
   async getExoplanetById(id: number): Promise<AnalyzedExoplanet> {
+    if (isDemoMode()) {
+      const rows = this.demoAnalyzed('kepler');
+      return rows.find((e) => e.id === id) ?? rows[0];
+    }
     return this.request<AnalyzedExoplanet>(`/api/v1/exoplanets/${id}`);
   }
 
@@ -162,6 +191,7 @@ class ExoplanetService {
    * Trigger validation for a job
    */
   async triggerValidation(jobId: string): Promise<{ status: string; message: string; job_id: string }> {
+    if (isDemoMode()) return { status: 'completed', message: 'Demo mode — validation simulated locally.', job_id: jobId };
     return this.request(`/api/v1/exoplanets/validate/${jobId}`, {
       method: 'POST',
     });
@@ -171,6 +201,23 @@ class ExoplanetService {
    * Get statistics for analyzed exoplanets
    */
   async getStats(datasetType?: 'kepler' | 'tess'): Promise<ExoplanetStats> {
+    if (isDemoMode()) {
+      const rows = this.demoAnalyzed(datasetType ?? 'kepler');
+      const class_distribution = rows.reduce((acc, r) => {
+        acc[r.predicted_class] = (acc[r.predicted_class] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+      return {
+        total_analyzed: rows.length,
+        validated: rows.length,
+        pending_validation: 0,
+        matched_with_dataset: rows.length,
+        new_discoveries: 0,
+        class_distribution,
+        dataset_type: datasetType ?? 'all',
+      };
+    }
+
     const queryParams = new URLSearchParams();
     if (datasetType) queryParams.set('dataset_type', datasetType);
 
