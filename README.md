@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src=".github/banner.png" width="100%">
+<img src=".github/banner.webp" width="100%">
 
 # GRIT-X-AWA
 
